@@ -463,50 +463,75 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
     btn.classList.add('spinning');
     setConn('loading', 'Fetching…');
 
-    try {
-      // allorigins returns the full server-rendered HTML of Groww's page
-      const targetUrl = 'https://groww.in/gold-rates/gold-rate-today-in-mumbai';
-      const proxyUrl  = 'https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl);
+    // Try multiple CORS proxies in sequence until one works
+    const targetUrl = 'https://groww.in/gold-rates/gold-rate-today-in-mumbai';
+    const PROXIES = [
+      url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    ];
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000);
-      const res = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error('Proxy error ' + res.status);
-      const data = await res.json();
-      const html = data.contents;
-
-      // ── Parse strategy 1: look for "24K Gold / 10gm" section and grab ₹XXXXXX.XX
-      // Groww renders: ₹159155.70 right after the 24K heading
+    // Extracts the 24K gold rate from raw HTML text
+    function extractRate(html) {
       const patterns = [
-        // Matches the first large rupee value (6 digits) after "24K"
-        /24K Gold[^₹]{0,200}?₹\s*([\d,]+(?:\.\d+)?)/i,
-        /24k[^₹]{0,100}?₹\s*([\d,]+(?:\.\d+)?)/i,
-        // Generic: first number in 1,50,000–2,00,000 range
-        /₹\s*(1[5-9][0-9],[\d,]+)/,
-        /₹\s*([\d,]{7,10})/,
+        /24K Gold[^\d]{0,200}?([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/i,
+        /24k[^\d]{0,150}?([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/i,
+        /([1-9][\d]{4,5}(?:\.\d+)?)(?=\s*0\.00)/,   // number followed by 0.00 change
+        /1[5-9][0-9][\d]{3}(?:\.\d+)?/,                // 150000–199999
       ];
-
-      let rate = null;
-
       for (const re of patterns) {
         const m = html.match(re);
         if (m) {
-          const cleaned = m[1].replace(/,/g,'');
-          const n = parseFloat(cleaned);
-          if (n >= 100000 && n <= 500000) { rate = n; break; }
+          const n = parseFloat((m[1] || m[0]).replace(/,/g, ''));
+          if (n >= 100000 && n <= 500000) return n;
+        }
+      }
+      // Fallback: grab all numbers in gold range
+      const all = [...html.matchAll(/([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/g)]
+        .map(m => parseFloat(m[1].replace(/,/g, '')))
+        .filter(n => n >= 100000 && n <= 500000);
+      return all.length ? all[0] : null;
+    }
+
+    async function fetchWithProxy(proxyFn, url) {
+      const proxyUrl = proxyFn(url);
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 15000);
+      try {
+        const res = await fetch(proxyUrl, { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const ct   = res.headers.get('content-type') || '';
+        const body = await res.text();
+        // allorigins wraps in JSON; codetabs returns raw HTML
+        let html = body;
+        if (ct.includes('json') || body.trim().startsWith('{')) {
+          try { html = JSON.parse(body).contents || body; } catch(e) {}
+        }
+        return html;
+      } catch(e) {
+        clearTimeout(tid);
+        throw e;
+      }
+    }
+
+    try {
+      let rate = null;
+      let lastErr = '';
+
+      for (const proxyFn of PROXIES) {
+        try {
+          const html = await fetchWithProxy(proxyFn, targetUrl);
+          rate = extractRate(html);
+          if (rate) break;
+          lastErr = 'Rate not found in response';
+        } catch(e) {
+          lastErr = e.message;
+          console.warn('Proxy failed:', e.message);
         }
       }
 
-      // ── Parse strategy 2: scan all numbers in gold range (1,00,000 – 3,00,000)
-      if (!rate) {
-        const allNums = [...html.matchAll(/₹\s*([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/g)]
-          .map(m => parseFloat(m[1].replace(/,/g,'')))
-          .filter(n => n >= 100000 && n <= 500000);
-        if (allNums.length) rate = allNums[0];
-      }
-
-      if (!rate) throw new Error('Could not extract rate from Groww page');
+      if (!rate) throw new Error('All proxies failed: ' + lastErr);
 
       rate24k_incgst = rate;
       setConn('live', 'Live');
@@ -518,15 +543,13 @@ main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; paddin
       setConn('offline', 'Offline');
 
       if (rate24k_incgst === null) {
-        // Show a friendly error + keep UI usable with last-known/demo value
         setBanner('err', `
           ⚠ <strong>Could not load rate from Groww.</strong>
-          The CORS proxy may be temporarily unavailable, or Groww's page structure changed.<br>
+          All CORS proxies failed — this can happen due to network restrictions.<br>
           <a href="https://groww.in/gold-rates/gold-rate-today-in-mumbai" target="_blank">Check Groww directly →</a>
           &nbsp;|&nbsp; Try refreshing in a moment.
         `);
-        // Fallback demo so the layout isn't blank
-        rate24k_incgst = 159155.70;
+        rate24k_incgst = 159155.70;  // demo fallback so layout isn't blank
         render();
       } else {
         setBanner('warn', '⚠ Could not refresh — showing last fetched rate.');
