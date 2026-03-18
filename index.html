@@ -1272,23 +1272,15 @@ main {
 
   // ── CORS proxy fetch helper
   async function fetchViaProxy(proxyFn, targetUrl) {
-    const url  = proxyFn(targetUrl);
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 15000);
-    try {
-      const res  = await fetch(url, { signal: ctrl.signal });
-      clearTimeout(tid);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const body = await res.text();
-      // allorigins wraps HTML inside JSON { contents: "..." }
-      if (body.trim().startsWith('{')) {
-        try { return JSON.parse(body).contents || body; } catch(e) {}
-      }
-      return body;
-    } catch(e) {
-      clearTimeout(tid);
-      throw e;
+    const url = proxyFn(targetUrl);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const body = await res.text();
+    // allorigins wraps HTML inside JSON { contents: "..." }
+    if (body.trim().startsWith('{')) {
+      try { return JSON.parse(body).contents || body; } catch(e) {}
     }
+    return body;
   }
 
   // ── Main fetch function
