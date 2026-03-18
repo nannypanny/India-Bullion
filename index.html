@@ -2,583 +2,1374 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>India Bullion – Live Gold Rates</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
 :root {
-  --gold:      #C9A84C;
-  --gold-light:#E8C96A;
-  --gold-dim:  #9A7A30;
-  --cream:     #FAF6EE;
-  --dark:      #1A1510;
-  --dark2:     #241E15;
-  --dark3:     #2E2618;
-  --border:    rgba(201,168,76,0.22);
-  --text:      #D9CEBC;
-  --text-dim:  #7A7060;
-  --green:     #4CAF7A;
-  --red:       #E05555;
+  --gold-100: #FDF6E3;
+  --gold-200: #F5DFA0;
+  --gold-300: #E8C96A;
+  --gold-400: #C9A84C;
+  --gold-500: #A8863A;
+  --gold-600: #7A5F1E;
+
+  --dark-900: #0F0C08;
+  --dark-800: #1A1510;
+  --dark-700: #231C12;
+  --dark-600: #2E2618;
+  --dark-500: #3A3020;
+
+  --neutral-100: #F5F0E8;
+  --neutral-200: #DDD5C3;
+  --neutral-300: #B8AD98;
+  --neutral-400: #8A7F6A;
+  --neutral-500: #5C5345;
+
+  --green:  #3DB87A;
+  --red:    #E05050;
+  --blue:   #4A90D9;
+
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.35);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.5);
+  --shadow-gold: 0 0 30px rgba(201,168,76,0.15);
+
+  --border: rgba(201,168,76,0.18);
+  --border-bright: rgba(201,168,76,0.4);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--dark); color: var(--text);
-  min-height: 100vh; overflow-x: hidden;
+  font-family: var(--font-body);
+  background-color: var(--dark-800);
+  color: var(--neutral-200);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
 }
+
+/* Ambient background glow */
 body::before {
-  content: ''; position: fixed; inset: 0;
+  content: '';
+  position: fixed;
+  inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(201,168,76,0.05) 0%, transparent 55%);
-  pointer-events: none; z-index: 0;
+    radial-gradient(ellipse 70% 50% at 15% 5%,  rgba(201,168,76,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(201,168,76,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(201,168,76,0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ── HEADER ── */
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
 header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(26,21,16,0.95); backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: rgba(15, 12, 8, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px;
 }
+
 .logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.55rem; font-weight: 700; color: var(--gold);
-  display: flex; align-items: center; gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
 }
-.logo-gem {
-  width: 28px; height: 28px; background: var(--gold);
-  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(201,168,76,0.4);
 }
-.header-right { display: flex; align-items: center; gap: 1.2rem; }
 
-.conn-pill {
-  display: flex; align-items: center; gap: 6px;
-  padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border);
-  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.07em;
-  text-transform: uppercase; background: var(--dark2); transition: all 0.3s;
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold-300);
+  letter-spacing: 0.01em;
 }
-.conn-pill .dot { width: 7px; height: 7px; border-radius: 50%; transition: all 0.3s; }
-.conn-pill.loading  { color: var(--gold-dim); }
-.conn-pill.loading  .dot { background: var(--gold); animation: blink 1s ease-in-out infinite; }
-.conn-pill.live     { color: var(--green); border-color: rgba(76,175,122,0.3); }
-.conn-pill.live     .dot { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pdot 1.8s ease-in-out infinite; }
-.conn-pill.offline  { color: var(--red); border-color: rgba(224,85,85,0.3); }
-.conn-pill.offline  .dot { background: var(--red); }
 
-@keyframes pdot  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.logo-text span {
+  color: var(--neutral-300);
+  font-weight: 500;
+  font-size: 0.8em;
+}
 
-.last-updated { font-size: 0.72rem; color: var(--text-dim); }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Status pill */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--dark-700);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: var(--transition);
+}
+
+.status-pill .pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-pill.loading { color: var(--gold-400); }
+.status-pill.loading .pip {
+  background: var(--gold-400);
+  animation: pipBlink 1s ease-in-out infinite;
+}
+
+.status-pill.live {
+  color: var(--green);
+  border-color: rgba(61, 184, 122, 0.3);
+}
+.status-pill.live .pip {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pipPulse 2s ease-in-out infinite;
+}
+
+.status-pill.offline {
+  color: var(--red);
+  border-color: rgba(224, 80, 80, 0.3);
+}
+.status-pill.offline .pip { background: var(--red); }
+
+@keyframes pipPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+@keyframes pipBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+.updated-time {
+  font-size: 0.7rem;
+  color: var(--neutral-400);
+  white-space: nowrap;
+}
 
 .refresh-btn {
-  background: transparent; border: 1px solid var(--border); color: var(--gold-dim);
-  padding: 6px 14px; border-radius: 6px; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.75rem;
-  display: flex; align-items: center; gap: 5px; transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--gold-500);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
 }
-.refresh-btn:hover { border-color: var(--gold); color: var(--gold); }
-.refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+
+.refresh-btn:hover {
+  border-color: var(--gold-400);
+  color: var(--gold-300);
+  background: rgba(201,168,76,0.06);
+}
+
+.refresh-btn svg {
+  transition: transform var(--transition);
+}
+
+.refresh-btn.spinning svg {
+  animation: spin 0.7s linear infinite;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── TICKER ── */
-.ticker-bar {
-  background: var(--dark2); border-bottom: 1px solid var(--border);
-  overflow: hidden; height: 36px; display: flex; align-items: center;
-}
-.ticker-track { display: flex; gap: 3rem; animation: ticker 30s linear infinite; white-space: nowrap; }
-@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.ticker-item { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; color: var(--text-dim); }
-.ticker-item span { color: var(--gold); margin-left: 6px; }
-
-/* ── MAIN ── */
-main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-
-.page-title {
-  margin-bottom: 2rem; display: flex; align-items: flex-end;
-  justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-}
-.page-title h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2rem; font-weight: 600; color: var(--cream); line-height: 1.15;
-}
-.page-title h1 em { font-style: normal; color: var(--gold); }
-.date-badge {
-  background: var(--dark2); border: 1px solid var(--border);
-  border-radius: 6px; padding: 6px 14px; font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.06em;
+/* ═══════════════════════════════════════════
+   TICKER STRIP
+═══════════════════════════════════════════ */
+.ticker {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--dark-700);
+  border-bottom: 1px solid var(--border);
 }
 
-/* ── TABS ── */
-.tabs {
-  display: flex; gap: 2px; background: var(--dark2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 4px; width: fit-content; margin-bottom: 2rem;
-}
-.tab-btn {
-  padding: 8px 20px; border: none; background: transparent; color: var(--text-dim); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
-  border-radius: 5px; transition: all 0.2s; letter-spacing: 0.03em;
-}
-.tab-btn.active { background: var(--gold); color: var(--dark); }
-.tab-btn:not(.active):hover { color: var(--gold); }
-
-/* ── CONTROLS ── */
-.controls-row {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 1.4rem; flex-wrap: wrap; gap: 0.8rem;
-}
-.view-toggle {
-  display: flex; gap: 2px; background: var(--dark2); border: 1px solid var(--border);
-  border-radius: 6px; padding: 3px;
-}
-.vt-btn {
-  background: transparent; border: none; color: var(--text-dim);
-  padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.75rem; transition: all 0.2s;
-}
-.vt-btn.active { background: var(--dark3); color: var(--gold); }
-
-/* ── CARDS ── */
-.cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
-@media(max-width:760px){ .cards { grid-template-columns: 1fr; } }
-@media(min-width:480px) and (max-width:760px){ .cards { grid-template-columns: 1fr 1fr; } }
-
-.card {
-  background: var(--dark2); border: 1px solid var(--border); border-radius: 12px;
-  padding: 1.6rem 1.4rem; position: relative; overflow: hidden;
-  transition: transform 0.22s, box-shadow 0.22s; animation: fadeUp 0.5s ease both;
-}
-.card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,168,76,0.18); }
-.card:nth-child(1){ animation-delay:.05s } .card:nth-child(2){ animation-delay:.12s } .card:nth-child(3){ animation-delay:.19s }
-.card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background: linear-gradient(90deg,transparent,var(--gold),transparent); opacity:.6;
-}
-.card.highlight { border-color: rgba(201,168,76,0.45); background: linear-gradient(140deg,rgba(201,168,76,0.08) 0%,var(--dark2) 60%); }
-@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
-.card-label {
-  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text-dim); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px;
-}
-.purity-badge {
-  background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); color: var(--gold);
-  border-radius: 4px; padding: 1px 7px; font-size: 0.68rem; letter-spacing: 0.06em;
-}
-.card-rate {
-  font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 700;
-  color: var(--cream); line-height: 1; margin-bottom: 0.3rem; letter-spacing: -0.01em;
-  min-height: 2.6rem;
-}
-.card-rate .rupee { font-size: 1.6rem; color: var(--gold); margin-right: 2px; }
-.card-sub { font-size: 0.73rem; color: var(--text-dim); margin-bottom: 0.8rem; }
-.card-sub strong { color: var(--text); font-weight: 500; }
-
-.change-row {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 0.73rem; font-weight: 500; margin-top: 0.5rem;
-}
-.up   { color: var(--green); }
-.down { color: var(--red); }
-.flat { color: var(--text-dim); }
-
-.flash-up   { animation: flashG 0.7s ease; }
-.flash-down { animation: flashR 0.7s ease; }
-@keyframes flashG { 0%{color:var(--green)} 100%{color:var(--cream)} }
-@keyndef flashR { 0%{color:var(--red)}   100%{color:var(--cream)} }
-
-/* ── TABLE ── */
-.rate-table { width:100%; border-collapse:collapse; margin-bottom:2.5rem; font-size:0.85rem; }
-.rate-table thead tr { border-bottom: 1px solid var(--border); }
-.rate-table th { text-align:left; padding:10px 16px; font-size:0.7rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); }
-.rate-table tbody tr { border-bottom:1px solid rgba(201,168,76,0.07); transition:background 0.15s; }
-.rate-table tbody tr:hover { background:rgba(201,168,76,0.04); }
-.rate-table td { padding:14px 16px; color:var(--text); }
-.rate-table td:nth-child(2), .rate-table td:nth-child(3) { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:var(--cream); }
-.pc { display:flex; align-items:center; gap:8px; }
-.dc { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-
-/* ── FORMULA STRIP ── */
-.formula-strip { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2.5rem; }
-@media(max-width:560px){ .formula-strip { grid-template-columns:1fr; } }
-.formula-card { background:var(--dark2); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; display:flex; align-items:center; gap:1rem; }
-.fi { width:42px;height:42px;flex-shrink:0;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem; }
-.ft { font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:3px; }
-.fe { font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold);font-weight:600; }
-
-/* ── SOURCE BADGE ── */
-.source-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 2rem; font-size: 0.75rem; color: var(--text-dim);
-}
-.source-badge {
-  background: var(--dark2); border: 1px solid var(--border);
-  border-radius: 4px; padding: 3px 10px; color: var(--gold-dim); font-size: 0.7rem;
+.ticker-inner {
+  display: flex;
+  gap: 0;
+  animation: tickerScroll 32s linear infinite;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* ── DISCLAIMER ── */
-.disclaimer { background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.4rem;font-size:0.74rem;color:var(--text-dim);line-height:1.6; }
-.disclaimer strong { color:var(--text);font-weight:500; }
-.disclaimer a { color:var(--gold-dim); text-decoration:none; }
-.disclaimer a:hover { color:var(--gold); }
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
-/* ── SKELETON ── */
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--neutral-400);
+  border-right: 1px solid var(--border);
+}
+
+.ticker-item .ticker-label {
+  color: var(--neutral-400);
+}
+
+.ticker-item .ticker-value {
+  color: var(--gold-300);
+  font-weight: 600;
+}
+
+.ticker-item .ticker-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--neutral-500);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════ */
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE HERO
+═══════════════════════════════════════════ */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-left {}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  margin-bottom: 0.75rem;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: var(--gold-400);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--neutral-100);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.hero-title .accent {
+  color: var(--gold-300);
+}
+
+.hero-sub {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--neutral-400);
+  font-weight: 400;
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.date-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--gold-400);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.date-chip svg {
+  opacity: 0.6;
+}
+
+.source-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: var(--radius-lg);
+  font-size: 0.68rem;
+  color: var(--gold-500);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.source-chip::before {
+  content: '●';
+  font-size: 0.5rem;
+  color: var(--green);
+}
+
+/* ═══════════════════════════════════════════
+   CONTROLS BAR
+═══════════════════════════════════════════ */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab-group {
+  display: flex;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 2px;
+}
+
+.tab {
+  padding: 9px 22px;
+  border: none;
+  background: transparent;
+  color: var(--neutral-400);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.tab:hover:not(.active) {
+  color: var(--gold-300);
+  background: rgba(201,168,76,0.05);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
+  color: var(--dark-800);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(201,168,76,0.3);
+}
+
+.view-group {
+  display: flex;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: var(--neutral-400);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.view-btn.active {
+  background: var(--dark-600);
+  color: var(--gold-300);
+}
+
+.view-btn:hover:not(.active) {
+  color: var(--neutral-200);
+}
+
+/* ═══════════════════════════════════════════
+   RATE CARDS
+═══════════════════════════════════════════ */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 520px) and (max-width: 900px) {
+  .cards-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.rate-card {
+  position: relative;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem 1.6rem 1.6rem;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  animation: riseUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  cursor: default;
+}
+
+.rate-card:nth-child(1) { animation-delay: 0.05s; }
+.rate-card:nth-child(2) { animation-delay: 0.12s; }
+.rate-card:nth-child(3) { animation-delay: 0.19s; }
+
+@keyframes riseUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.rate-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--shadow-gold);
+  border-color: var(--border-bright);
+}
+
+/* Top accent bar */
+.rate-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  opacity: 0.5;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Subtle glow circle behind the number */
+.rate-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Primary / featured card */
+.rate-card.featured {
+  background: linear-gradient(145deg, rgba(201,168,76,0.07) 0%, var(--dark-700) 50%);
+  border-color: rgba(201,168,76,0.32);
+}
+
+.rate-card.featured::before {
+  opacity: 0.9;
+}
+
+/* Card header row */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.card-meta {}
+
+.card-karat {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--neutral-300);
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.card-name {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.purity-tag {
+  padding: 3px 10px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.22);
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gold-400);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Price display */
+.card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 0.4rem;
+}
+
+.price-symbol {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gold-400);
+  line-height: 1;
+}
+
+.price-value {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--neutral-100);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  min-width: 80px;
+}
+
+.price-unit {
+  font-size: 0.72rem;
+  color: var(--neutral-400);
+  margin-bottom: 0.15rem;
+  align-self: flex-end;
+}
+
+/* Formula tag */
+.formula-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1rem;
+  padding: 5px 10px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.12);
+  border-radius: var(--radius-sm);
+  font-size: 0.68rem;
+  color: var(--neutral-400);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.formula-tag strong {
+  color: var(--gold-400);
+  font-weight: 600;
+}
+
+/* Flash animations */
+.flash-up   { animation: flashGreen 0.8s ease; }
+.flash-down { animation: flashRed   0.8s ease; }
+
+@keyframes flashGreen {
+  0%   { color: var(--green); text-shadow: 0 0 20px rgba(61,184,122,0.5); }
+  100% { color: var(--neutral-100); text-shadow: none; }
+}
+@keyframes flashRed {
+  0%   { color: var(--red); text-shadow: 0 0 20px rgba(224,80,80,0.5); }
+  100% { color: var(--neutral-100); text-shadow: none; }
+}
+
+/* Skeleton loader */
 .skeleton {
-  background: linear-gradient(90deg,var(--dark3) 25%,rgba(201,168,76,0.06) 50%,var(--dark3) 75%);
-  background-size: 200% 100%; animation: shimmer 1.6s infinite;
-  border-radius: 4px; color: transparent !important; user-select: none; display: inline-block; min-width: 100px;
+  display: inline-block;
+  min-width: 120px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--dark-600)   25%,
+    rgba(201,168,76,0.08) 50%,
+    var(--dark-600)   75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  color: transparent !important;
+  user-select: none;
 }
-@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
 
-/* ── ERROR BANNER ── */
-.banner { border-radius:10px;padding:1rem 1.4rem;font-size:0.82rem;margin-bottom:1.5rem;line-height:1.6;display:none; }
-.banner.err { background:rgba(224,85,85,0.08);border:1px solid rgba(224,85,85,0.25);color:var(--red);display:block; }
-.banner.warn { background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);color:var(--gold-dim);display:block; }
-.banner a { color: var(--gold); }
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ═══════════════════════════════════════════
+   TABLE VIEW
+═══════════════════════════════════════════ */
+.table-wrap {
+  display: none;
+  margin-bottom: 2.5rem;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rate-table thead {
+  background: var(--dark-600);
+}
+
+.rate-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neutral-400);
+  border-bottom: 1px solid var(--border);
+}
+
+.rate-table tbody tr {
+  border-bottom: 1px solid rgba(201,168,76,0.07);
+  transition: background var(--transition);
+}
+
+.rate-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.rate-table tbody tr:hover {
+  background: rgba(201,168,76,0.04);
+}
+
+.rate-table td {
+  padding: 16px 20px;
+  font-size: 0.88rem;
+  color: var(--neutral-200);
+  vertical-align: middle;
+}
+
+.rate-table td.price-cell {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--neutral-100);
+}
+
+.rate-table td.formula-cell {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+}
+
+.table-purity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   INFO STRIP  (formula explainer)
+═══════════════════════════════════════════ */
+.info-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 540px) {
+  .info-strip { grid-template-columns: 1fr; }
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition);
+}
+
+.info-card:hover {
+  border-color: var(--border-bright);
+}
+
+.info-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.info-body {}
+
+.info-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--neutral-400);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.info-formula {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--gold-300);
+}
+
+/* ═══════════════════════════════════════════
+   ALERT / BANNER
+═══════════════════════════════════════════ */
+.alert {
+  display: none;
+  padding: 1rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+}
+
+.alert.warn {
+  display: block;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.22);
+  color: var(--gold-400);
+}
+
+.alert.err {
+  display: block;
+  background: rgba(224,80,80,0.07);
+  border: 1px solid rgba(224,80,80,0.22);
+  color: #f08080;
+}
+
+.alert a {
+  color: var(--gold-300);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ═══════════════════════════════════════════
+   DISCLAIMER
+═══════════════════════════════════════════ */
+.disclaimer {
+  padding: 1.2rem 1.6rem;
+  background: var(--dark-700);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  line-height: 1.7;
+}
+
+.disclaimer strong {
+  color: var(--neutral-300);
+  font-weight: 600;
+}
+
+.disclaimer a {
+  color: var(--gold-500);
+  text-decoration: none;
+}
+
+.disclaimer a:hover {
+  color: var(--gold-300);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE HEADER TWEAKS
+═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  header { padding: 0 1rem; }
+  .updated-time { display: none; }
+  .logo-text span { display: none; }
+  main { padding: 2rem 1rem 4rem; }
+}
 ```
 
   </style>
 </head>
 <body>
 
+<!-- ═══ HEADER ═══════════════════════════════ -->
+
 <header>
-  <div class="logo"><div class="logo-gem"></div>India Bullion</div>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">India Bullion <span>Rates</span></div>
+  </div>
+
   <div class="header-right">
-    <div class="conn-pill loading" id="connPill">
-      <div class="dot"></div><span id="connLabel">Loading…</span>
+    <div class="status-pill loading" id="statusPill">
+      <div class="pip"></div>
+      <span id="statusLabel">Loading</span>
     </div>
-    <div class="last-updated" id="lastUpdated">–</div>
+    <div class="updated-time" id="updatedTime">–</div>
     <button class="refresh-btn" id="refreshBtn" onclick="loadRates()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
       </svg>
       Refresh
     </button>
   </div>
 </header>
 
-<!-- TICKER -->
+<!-- ═══ TICKER ════════════════════════════════ -->
 
-<div class="ticker-bar">
-  <div class="ticker-track">
-    <span class="ticker-item">24KT Gold · Mumbai<span id="tk24">–</span></span>
-    <span class="ticker-item">916 (×0.96)<span id="tk916">–</span></span>
-    <span class="ticker-item">750 (×0.82)<span id="tk750">–</span></span>
-    <span class="ticker-item">Source<span>groww.in · Mumbai</span></span>
-    <span class="ticker-item">Incl. GST rates</span>
-    <span class="ticker-item">24KT Gold · Mumbai<span id="tk24b">–</span></span>
-    <span class="ticker-item">916 (×0.96)<span id="tk916b">–</span></span>
-    <span class="ticker-item">750 (×0.82)<span id="tk750b">–</span></span>
-    <span class="ticker-item">Source<span>groww.in · Mumbai</span></span>
-    <span class="ticker-item">Incl. GST rates</span>
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item"><span class="ticker-label">24K Gold · Mumbai</span><span class="ticker-dot"></span><span class="ticker-value" id="tk24a">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">916 · 22K</span><span class="ticker-dot"></span><span class="ticker-value" id="tk916a">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">750 · 18K</span><span class="ticker-dot"></span><span class="ticker-value" id="tk750a">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">Source</span><span class="ticker-dot"></span><span class="ticker-value">chandukakasaraf.in</span></div>
+    <div class="ticker-item"><span class="ticker-label">Rates ex-GST · Per 10g</span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item"><span class="ticker-label">24K Gold · Mumbai</span><span class="ticker-dot"></span><span class="ticker-value" id="tk24b">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">916 · 22K</span><span class="ticker-dot"></span><span class="ticker-value" id="tk916b">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">750 · 18K</span><span class="ticker-dot"></span><span class="ticker-value" id="tk750b">–</span></div>
+    <div class="ticker-item"><span class="ticker-label">Source</span><span class="ticker-dot"></span><span class="ticker-value">chandukakasaraf.in</span></div>
+    <div class="ticker-item"><span class="ticker-label">Rates ex-GST · Per 10g</span></div>
   </div>
 </div>
 
+<!-- ═══ MAIN ══════════════════════════════════ -->
+
 <main>
-  <div class="page-title">
-    <h1>Mumbai Gold Rates<br><em>Today's Reference Price</em></h1>
-    <div class="date-badge" id="dateBadge">–</div>
-  </div>
 
-  <div class="source-row">
-    <span>Data source:</span>
-    <span class="source-badge">groww.in · gold-rate-today-in-mumbai</span>
-    <span>· Rates include GST</span>
-  </div>
+  <!-- Hero -->
 
-  <!-- TABS -->
-
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ex',this)">Rate Before GST</button>
-    <button class="tab-btn" onclick="switchTab('in',this)">Rate After GST (3%)</button>
-  </div>
-
-  <div class="banner" id="banner"></div>
-
-  <div class="controls-row">
-    <span style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">Per 10 grams</span>
-    <div class="view-toggle">
-      <button class="vt-btn active" onclick="setView('cards',this)">Cards</button>
-      <button class="vt-btn" onclick="setView('table',this)">Table</button>
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Live Gold Rates · Mumbai</div>
+      <h1 class="hero-title">Today's <span class="accent">Gold Price</span><br>Reference</h1>
+      <p class="hero-sub">24K · 22K (916) · 18K (750) — per 10 grams</p>
+    </div>
+    <div class="hero-right">
+      <div class="date-chip">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+        <span id="dateBadge">–</span>
+      </div>
+      <div class="source-chip">chandukakasaraf.in · Ex-GST</div>
     </div>
   </div>
 
-  <!-- CARDS -->
+  <!-- Alert banner -->
 
-  <div class="cards" id="cardsView">
-    <!-- 24K -->
-    <div class="card highlight">
-      <div class="card-label">Pure Gold <span class="purity-badge">24KT · 999</span></div>
-      <div class="card-rate"><span class="rupee">₹</span><span id="c24k" class="skeleton">––––––</span></div>
-      <div class="card-sub">per 10 grams · <strong>Groww Source Rate</strong></div>
-      <div class="change-row" id="chg24"></div>
+  <div class="alert" id="alertBanner"></div>
+
+  <!-- Controls -->
+
+  <div class="controls">
+    <div class="tab-group">
+      <button class="tab active" onclick="switchTab('ex', this)">Rate Before GST</button>
+      <button class="tab"        onclick="switchTab('in', this)">Rate After GST (3%)</button>
     </div>
-    <!-- 916 -->
-    <div class="card">
-      <div class="card-label">22 Karat Gold <span class="purity-badge">916</span></div>
-      <div class="card-rate"><span class="rupee">₹</span><span id="c916" class="skeleton">––––––</span></div>
-      <div class="card-sub">per 10 grams · <strong>24K × 0.96</strong></div>
-      <div class="change-row" id="chg916"></div>
-    </div>
-    <!-- 750 -->
-    <div class="card">
-      <div class="card-label">18 Karat Gold <span class="purity-badge">750</span></div>
-      <div class="card-rate"><span class="rupee">₹</span><span id="c750" class="skeleton">––––––</span></div>
-      <div class="card-sub">per 10 grams · <strong>24K × 0.82</strong></div>
-      <div class="change-row" id="chg750"></div>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <span style="font-size:0.72rem;color:var(--neutral-400);letter-spacing:0.06em;text-transform:uppercase;">Per 10g</span>
+      <div class="view-group">
+        <button class="view-btn active" onclick="setView('cards', this)">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <rect x="0" y="0" width="7" height="7" rx="1.5"/>
+            <rect x="9" y="0" width="7" height="7" rx="1.5"/>
+            <rect x="0" y="9" width="7" height="7" rx="1.5"/>
+            <rect x="9" y="9" width="7" height="7" rx="1.5"/>
+          </svg>
+          Cards
+        </button>
+        <button class="view-btn" onclick="setView('table', this)">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="1" y="1" width="14" height="14" rx="2"/>
+            <line x1="1" y1="6"  x2="15" y2="6"/>
+            <line x1="1" y1="11" x2="15" y2="11"/>
+            <line x1="6" y1="1"  x2="6"  y2="15"/>
+          </svg>
+          Table
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- TABLE -->
+  <!-- Cards -->
 
-  <div id="tableView" style="display:none;margin-bottom:2.5rem;">
+  <div class="cards-grid" id="cardsView">
+
+```
+<!-- 24K -->
+<div class="rate-card featured">
+  <div class="card-header">
+    <div class="card-meta">
+      <div class="card-karat">24 Karat Gold</div>
+      <div class="card-name">Pure Gold · 999</div>
+    </div>
+    <div class="purity-tag">24KT</div>
+  </div>
+  <div class="card-price">
+    <span class="price-symbol">₹</span>
+    <span class="price-value skeleton" id="c24k">––––––</span>
+    <span class="price-unit">/10g</span>
+  </div>
+  <div class="formula-tag">
+    <strong>Source rate</strong> — Chandukaka Saraf
+  </div>
+</div>
+
+<!-- 916 -->
+<div class="rate-card">
+  <div class="card-header">
+    <div class="card-meta">
+      <div class="card-karat">22 Karat Gold</div>
+      <div class="card-name">Hallmark · 916</div>
+    </div>
+    <div class="purity-tag">916</div>
+  </div>
+  <div class="card-price">
+    <span class="price-symbol">₹</span>
+    <span class="price-value skeleton" id="c916">––––––</span>
+    <span class="price-unit">/10g</span>
+  </div>
+  <div class="formula-tag">
+    24K Rate <strong>× 0.96</strong>
+  </div>
+</div>
+
+<!-- 750 -->
+<div class="rate-card">
+  <div class="card-header">
+    <div class="card-meta">
+      <div class="card-karat">18 Karat Gold</div>
+      <div class="card-name">Hallmark · 750</div>
+    </div>
+    <div class="purity-tag">750</div>
+  </div>
+  <div class="card-price">
+    <span class="price-symbol">₹</span>
+    <span class="price-value skeleton" id="c750">––––––</span>
+    <span class="price-unit">/10g</span>
+  </div>
+  <div class="formula-tag">
+    24K Rate <strong>× 0.82</strong>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- Table -->
+
+  <div class="table-wrap" id="tableView">
     <table class="rate-table">
       <thead>
-        <tr><th>Purity</th><th>Rate (ex-GST)</th><th>Rate (incl. 3% GST)</th><th>Formula</th></tr>
+        <tr>
+          <th>Purity</th>
+          <th>Rate (Ex-GST)</th>
+          <th>Rate (Incl. 3% GST)</th>
+          <th>Formula</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
-          <td><div class="pc"><div class="dc" style="background:var(--gold-light)"></div>24KT / 999</div></td>
-          <td id="t24ex">–</td><td id="t24in">–</td>
-          <td style="color:var(--text-dim);font-size:0.78rem">Groww source</td>
+          <td>
+            <div class="table-purity">
+              <div class="table-dot" style="background: var(--gold-300);"></div>
+              <span>24KT · 999 (Pure Gold)</span>
+            </div>
+          </td>
+          <td class="price-cell" id="t24ex">–</td>
+          <td class="price-cell" id="t24in">–</td>
+          <td class="formula-cell">Source rate</td>
         </tr>
         <tr>
-          <td><div class="pc"><div class="dc" style="background:var(--gold)"></div>22KT / 916</div></td>
-          <td id="t916ex">–</td><td id="t916in">–</td>
-          <td style="color:var(--text-dim);font-size:0.78rem">24K × 0.96</td>
+          <td>
+            <div class="table-purity">
+              <div class="table-dot" style="background: var(--gold-400);"></div>
+              <span>22KT · 916</span>
+            </div>
+          </td>
+          <td class="price-cell" id="t916ex">–</td>
+          <td class="price-cell" id="t916in">–</td>
+          <td class="formula-cell">24K × 0.96</td>
         </tr>
         <tr>
-          <td><div class="pc"><div class="dc" style="background:var(--gold-dim)"></div>18KT / 750</div></td>
-          <td id="t750ex">–</td><td id="t750in">–</td>
-          <td style="color:var(--text-dim);font-size:0.78rem">24K × 0.82</td>
+          <td>
+            <div class="table-purity">
+              <div class="table-dot" style="background: var(--gold-500);"></div>
+              <span>18KT · 750</span>
+            </div>
+          </td>
+          <td class="price-cell" id="t750ex">–</td>
+          <td class="price-cell" id="t750in">–</td>
+          <td class="formula-cell">24K × 0.82</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- FORMULA STRIP -->
+  <!-- Info strip -->
 
-  <div class="formula-strip">
-    <div class="formula-card"><div class="fi">◈</div><div><div class="ft">916 Calculation</div><div class="fe">24K Rate × 0.96</div></div></div>
-    <div class="formula-card"><div class="fi">◇</div><div><div class="ft">750 Calculation</div><div class="fe">24K Rate × 0.82</div></div></div>
+  <div class="info-strip">
+    <div class="info-card">
+      <div class="info-icon">◈</div>
+      <div class="info-body">
+        <div class="info-label">916 · 22 Karat</div>
+        <div class="info-formula">24K Rate × 0.96</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">◇</div>
+      <div class="info-body">
+        <div class="info-label">750 · 18 Karat</div>
+        <div class="info-formula">24K Rate × 0.82</div>
+      </div>
+    </div>
   </div>
+
+  <!-- Disclaimer -->
 
   <div class="disclaimer">
-    <strong>Disclaimer:</strong> Rates are fetched from <a href="https://groww.in/gold-rates/gold-rate-today-in-mumbai" target="_blank">groww.in</a> (Mumbai, 24K per 10g).
-    Groww's rates include GST — the "Before GST" tab divides by 1.03 to derive ex-GST values.
-    916 and 750 values use fixed multipliers ×0.96 and ×0.82 on the 24K rate.
-    Rates refresh every 30 minutes. These are reference prices only.
+    <strong>Disclaimer:</strong> Rates are fetched from
+    <a href="https://chandukakasaraf.in/todays-gold-rate/" target="_blank">chandukakasaraf.in</a>
+    (24K per gram, ex-GST) and multiplied ×10 for per-10g display.
+    916 and 750 values apply fixed multipliers ×0.96 and ×0.82.
+    The "After GST" tab adds 3% on top. Rates are updated multiple times daily.
+    These are reference prices — actual jewellery bills include making charges.
   </div>
+
 </main>
 
-<script>
-  // ── State
-  let tab = 'ex', view = 'cards';
-  let rate24k_incgst = null;   // 24K per 10g as returned by Groww (incl. GST)
-  let prevRate = null;
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
 
-  const fmt     = n => Math.round(n).toLocaleString('en-IN');
-  const rupee   = n => '₹' + fmt(n);
-  const exGST   = n => n / 1.03;   // Groww publishes incl-GST; strip it for ex-GST tab
+<script>
+
+  // ── State
+  let currentTab  = 'ex';
+  let currentView = 'cards';
+  let rate24k     = null;   // 24K per 10g, ex-GST
+  let prevRate    = null;
+
+  // ── Helpers
+  const fmt   = n => Math.round(n).toLocaleString('en-IN');
+  const rupee = n => '₹' + fmt(n);
 
   // ── Date badge
-  function setDate() {
+  function updateDate() {
     const now = new Date();
-    document.getElementById('dateBadge').textContent =
-      String(now.getDate()).padStart(2,'0') + '/' +
-      String(now.getMonth()+1).padStart(2,'0') + '/' +
-      String(now.getFullYear()).slice(-2);
+    const d = String(now.getDate()).padStart(2, '0');
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const y = String(now.getFullYear()).slice(-2);
+    document.getElementById('dateBadge').textContent = `${d} / ${m} / ${y}`;
   }
 
-  // ── Connection pill
-  function setConn(state, label) {
-    const p = document.getElementById('connPill');
-    p.className = 'conn-pill ' + state;
-    document.getElementById('connLabel').textContent = label;
+  // ── Status pill
+  function setStatus(state, label) {
+    const pill = document.getElementById('statusPill');
+    pill.className = 'status-pill ' + state;
+    document.getElementById('statusLabel').textContent = label;
   }
 
-  // ── Banner
-  function setBanner(type, html) {
-    const b = document.getElementById('banner');
-    b.className = type ? 'banner ' + type : 'banner';
-    b.innerHTML = html || '';
+  // ── Alert banner
+  function setAlert(type, html) {
+    const el = document.getElementById('alertBanner');
+    el.className = type ? 'alert ' + type : 'alert';
+    el.innerHTML = html || '';
   }
 
-  // ── Render all values from rate24k_incgst
+  // ── Render rates
   function render() {
-    if (rate24k_incgst === null) return;
+    if (rate24k === null) return;
 
-    const incgst = rate24k_incgst;          // 24K incl. GST  (from Groww)
-    const exgst  = exGST(incgst);           // 24K ex-GST
+    const ex  = rate24k;          // ex-GST 24K per 10g
+    const inc = ex * 1.03;        // incl. 3% GST
 
-    const r916_in = incgst * 0.96;
-    const r750_in = incgst * 0.82;
-    const r916_ex = exgst  * 0.96;
-    const r750_ex = exgst  * 0.82;
-
-    // Which values to show in the main cards
-    const show24  = tab === 'in' ? incgst   : exgst;
-    const show916 = tab === 'in' ? r916_in  : r916_ex;
-    const show750 = tab === 'in' ? r750_in  : r750_ex;
+    const show24  = currentTab === 'in' ? inc        : ex;
+    const show916 = currentTab === 'in' ? inc * 0.96 : ex * 0.96;
+    const show750 = currentTab === 'in' ? inc * 0.82 : ex * 0.82;
 
     const flash = prevRate !== null
-      ? (incgst > prevRate ? 'flash-up' : incgst < prevRate ? 'flash-down' : '') : '';
+      ? (rate24k > prevRate ? 'flash-up' : rate24k < prevRate ? 'flash-down' : '') : '';
 
     const setCard = (id, val) => {
       const el = document.getElementById(id);
-      el.classList.remove('skeleton','flash-up','flash-down');
+      el.classList.remove('skeleton', 'flash-up', 'flash-down');
       el.textContent = fmt(val);
       if (flash) { void el.offsetWidth; el.classList.add(flash); }
     };
 
-    setCard('c24k',  show24);
-    setCard('c916',  show916);
-    setCard('c750',  show750);
+    setCard('c24k', show24);
+    setCard('c916', show916);
+    setCard('c750', show750);
 
-    // Table always shows both columns
-    document.getElementById('t24ex').textContent  = rupee(exgst);
-    document.getElementById('t916ex').textContent = rupee(r916_ex);
-    document.getElementById('t750ex').textContent = rupee(r750_ex);
-    document.getElementById('t24in').textContent  = rupee(incgst);
-    document.getElementById('t916in').textContent = rupee(r916_in);
-    document.getElementById('t750in').textContent = rupee(r750_in);
+    // Table — always show both columns
+    document.getElementById('t24ex').textContent  = rupee(ex);
+    document.getElementById('t916ex').textContent = rupee(ex * 0.96);
+    document.getElementById('t750ex').textContent = rupee(ex * 0.82);
+    document.getElementById('t24in').textContent  = rupee(inc);
+    document.getElementById('t916in').textContent = rupee(inc * 0.96);
+    document.getElementById('t750in').textContent = rupee(inc * 0.82);
 
-    // Ticker
-    const tick = v => rupee(tab === 'in' ? v * 1 : exGST(v));
-    ['tk24','tk24b'].forEach(id   => document.getElementById(id).textContent   = tick(incgst));
-    ['tk916','tk916b'].forEach(id => document.getElementById(id).textContent   = tick(r916_in));
-    ['tk750','tk750b'].forEach(id => document.getElementById(id).textContent   = tick(r750_in));
+    // Ticker (always ex-GST)
+    const t24  = rupee(ex);
+    const t916 = rupee(ex * 0.96);
+    const t750 = rupee(ex * 0.82);
+    ['tk24a',  'tk24b' ].forEach(id => document.getElementById(id).textContent = t24);
+    ['tk916a', 'tk916b'].forEach(id => document.getElementById(id).textContent = t916);
+    ['tk750a', 'tk750b'].forEach(id => document.getElementById(id).textContent = t750);
 
-    document.getElementById('lastUpdated').textContent =
-      'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('updatedTime').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
 
-    prevRate = incgst;
+    prevRate = rate24k;
   }
 
-  // ── FETCH from Groww via CORS proxy
-  async function loadRates() {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('spinning');
-    setConn('loading', 'Fetching…');
-
-    // Try multiple CORS proxies in sequence until one works
-    const targetUrl = 'https://groww.in/gold-rates/gold-rate-today-in-mumbai';
-    const PROXIES = [
-      url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  // ── Extract 24K rate (per gram) from Chandukaka Saraf HTML
+  function extractRate(html) {
+    // The page has: "24 KT Gold | ₹15525 PER 1 GM"
+    // Match "24 KT" or "24KT" followed by ₹ and digits
+    const patterns = [
+      /24\s*KT\s*Gold[^₹\d]{0,60}₹?\s*(\d{4,6})/i,
+      /24\s*KT[^₹\d]{0,40}₹?\s*(\d{4,6})/i,
+      /24K[^₹\d]{0,40}₹?\s*(\d{4,6})/i,
     ];
 
-    // Extracts the 24K gold rate from raw HTML text
-    function extractRate(html) {
-      const patterns = [
-        /24K Gold[^\d]{0,200}?([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/i,
-        /24k[^\d]{0,150}?([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/i,
-        /([1-9][\d]{4,5}(?:\.\d+)?)(?=\s*0\.00)/,   // number followed by 0.00 change
-        /1[5-9][0-9][\d]{3}(?:\.\d+)?/,                // 150000–199999
-      ];
-      for (const re of patterns) {
-        const m = html.match(re);
-        if (m) {
-          const n = parseFloat((m[1] || m[0]).replace(/,/g, ''));
-          if (n >= 100000 && n <= 500000) return n;
-        }
-      }
-      // Fallback: grab all numbers in gold range
-      const all = [...html.matchAll(/([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/g)]
-        .map(m => parseFloat(m[1].replace(/,/g, '')))
-        .filter(n => n >= 100000 && n <= 500000);
-      return all.length ? all[0] : null;
-    }
-
-    async function fetchWithProxy(proxyFn, url) {
-      const proxyUrl = proxyFn(url);
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 15000);
-      try {
-        const res = await fetch(proxyUrl, { signal: ctrl.signal });
-        clearTimeout(tid);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const ct   = res.headers.get('content-type') || '';
-        const body = await res.text();
-        // allorigins wraps in JSON; codetabs returns raw HTML
-        let html = body;
-        if (ct.includes('json') || body.trim().startsWith('{')) {
-          try { html = JSON.parse(body).contents || body; } catch(e) {}
-        }
-        return html;
-      } catch(e) {
-        clearTimeout(tid);
-        throw e;
+    for (const re of patterns) {
+      const m = html.match(re);
+      if (m) {
+        const n = parseInt(m[1]);
+        // Chandukaka Saraf gives per-gram; 24K should be ~14000–20000/g
+        if (n >= 8000 && n <= 50000) return n;
       }
     }
 
+    // Fallback: find any per-gram-range number near "24"
+    const allMatches = [...html.matchAll(/(\d{4,6})/g)]
+      .map(m => parseInt(m[1]))
+      .filter(n => n >= 8000 && n <= 50000);
+
+    return allMatches.length ? allMatches[0] : null;
+  }
+
+  // ── CORS proxy fetch helper
+  async function fetchViaProxy(proxyFn, targetUrl) {
+    const url  = proxyFn(targetUrl);
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 15000);
     try {
-      let rate = null;
-      let lastErr = '';
-
-      for (const proxyFn of PROXIES) {
-        try {
-          const html = await fetchWithProxy(proxyFn, targetUrl);
-          rate = extractRate(html);
-          if (rate) break;
-          lastErr = 'Rate not found in response';
-        } catch(e) {
-          lastErr = e.message;
-          console.warn('Proxy failed:', e.message);
-        }
+      const res  = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(tid);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const body = await res.text();
+      // allorigins wraps HTML inside JSON { contents: "..." }
+      if (body.trim().startsWith('{')) {
+        try { return JSON.parse(body).contents || body; } catch(e) {}
       }
-
-      if (!rate) throw new Error('All proxies failed: ' + lastErr);
-
-      rate24k_incgst = rate;
-      setConn('live', 'Live');
-      setBanner(null, '');
-      render();
-
-    } catch (err) {
-      console.warn('Fetch error:', err.message);
-      setConn('offline', 'Offline');
-
-      if (rate24k_incgst === null) {
-        setBanner('err', `
-          ⚠ <strong>Could not load rate from Groww.</strong>
-          All CORS proxies failed — this can happen due to network restrictions.<br>
-          <a href="https://groww.in/gold-rates/gold-rate-today-in-mumbai" target="_blank">Check Groww directly →</a>
-          &nbsp;|&nbsp; Try refreshing in a moment.
-        `);
-        rate24k_incgst = 159155.70;  // demo fallback so layout isn't blank
-        render();
-      } else {
-        setBanner('warn', '⚠ Could not refresh — showing last fetched rate.');
-      }
-    } finally {
-      btn.classList.remove('spinning');
+      return body;
+    } catch(e) {
+      clearTimeout(tid);
+      throw e;
     }
   }
 
-  // ── Tab / view
-  function switchTab(t, el) {
-    tab = t;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active'); render();
+  // ── Main fetch function
+  async function loadRates() {
+    document.getElementById('refreshBtn').classList.add('spinning');
+    setStatus('loading', 'Loading');
+
+    const TARGET = 'https://chandukakasaraf.in/todays-gold-rate/';
+
+    const PROXIES = [
+      u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+      u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+      u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    ];
+
+    let ratePerGram = null;
+    let lastErr = '';
+
+    for (const proxyFn of PROXIES) {
+      try {
+        const html = await fetchViaProxy(proxyFn, TARGET);
+        ratePerGram = extractRate(html);
+        if (ratePerGram) break;
+        lastErr = 'Rate not found in page';
+      } catch(e) {
+        lastErr = e.message;
+        console.warn('Proxy attempt failed:', e.message);
+      }
+    }
+
+    if (ratePerGram) {
+      // Convert per gram → per 10 grams
+      rate24k = ratePerGram * 10;
+      setStatus('live', 'Live');
+      setAlert(null, '');
+      render();
+    } else {
+      console.error('All proxies failed:', lastErr);
+      setStatus('offline', 'Offline');
+
+      if (rate24k === null) {
+        // Use today's known rate as fallback so layout is never blank
+        rate24k = 155250; // ₹15,525/g × 10
+        render();
+        setAlert('err',
+          `⚠ <strong>Could not fetch live rate.</strong> Showing last known rate. ` +
+          `<a href="${TARGET}" target="_blank">Check source →</a> &nbsp;|&nbsp; ` +
+          `<a href="#" onclick="loadRates();return false;">Retry</a>`
+        );
+      } else {
+        setAlert('warn', '⚠ Refresh failed — showing last fetched rate.');
+      }
+    }
+
+    document.getElementById('refreshBtn').classList.remove('spinning');
   }
-  function setView(v, el) {
-    view = v;
-    document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
+
+  // ── Tab switching
+  function switchTab(t, el) {
+    currentTab = t;
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
-    document.getElementById('cardsView').style.display = v==='cards' ? 'grid' : 'none';
-    document.getElementById('tableView').style.display = v==='table' ? 'block' : 'none';
+    render();
+  }
+
+  // ── View switching
+  function setView(v, el) {
+    currentView = v;
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('cardsView').style.display  = v === 'cards' ? 'grid'  : 'none';
+    document.getElementById('tableView').style.display  = v === 'table' ? 'block' : 'none';
   }
 
   // ── Init
-  setDate();
-  setInterval(setDate, 60000);
+  updateDate();
+  setInterval(updateDate, 60000);
   loadRates();
-  // Auto-refresh every 30 minutes (Groww updates rates daily, not real-time)
+  // Refresh every 30 minutes
   setInterval(loadRates, 30 * 60 * 1000);
+
 </script>
 
 </body>
