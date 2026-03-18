@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mumbai Gold Tracker - Business Edition</title>
+    <title>Mumbai Gold Live</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
@@ -12,7 +12,7 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 20px; }
         .brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); font-weight: 700; letter-spacing: 1px; }
         
-        .tax-control { display: flex; align-items: center; justify-content: space-between; background: #222; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .tax-control { display: flex; align-items: center; justify-content: space-between; background: #222; padding: 14px 18px; border-radius: 14px; margin-bottom: 20px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 20px; }
@@ -50,21 +50,21 @@
     </div>
 
     <div class="card">
-        <div class="label">24KT Gold (99.9)</div>
+        <div class="label">24KT GOLD (99.9)</div>
         <div id="p24" class="price-display">₹ --,---</div>
-        <div class="unit">Rate per 10 Grams (+4.75% Premium)</div>
+        <div class="unit">Rate per 10 Grams</div>
     </div>
 
     <div class="card">
-        <div class="label">22KT Gold (96% Value)</div>
+        <div class="label">22KT GOLD (91.6)</div>
         <div id="p22" class="price-display">₹ --,---</div>
-        <div class="unit">Calculation: 24KT Rate × 96%</div>
+        <div class="unit">Standard Jewellery (10g)</div>
     </div>
 
     <div class="card">
-        <div class="label">18KT Gold (82% Value)</div>
+        <div class="label">18KT GOLD (75.0)</div>
         <div id="p18" class="price-display">₹ --,---</div>
-        <div class="unit">Calculation: 24KT Rate × 82%</div>
+        <div class="unit">Diamond Jewellery Base (10g)</div>
     </div>
 
     <div class="footer">
@@ -85,7 +85,7 @@
             });
             const data = await response.json();
             
-            // Base conversion from Ounce to 1 Gram
+            // Ounce to 1 Gram conversion
             rawGlobalPrice = data.price / 31.1035;
             
             updateUI();
@@ -101,22 +101,20 @@
         const isGstOn = document.getElementById('taxToggle').checked;
         const taxLabel = document.getElementById('taxStatusLabel');
         
-        // 1. Calculate the New Base (Rate + 4.75%)
+        // Base Calculation (Global + 4.75% Premium)
         const baseWithPremium = rawGlobalPrice * 1.0475;
         
-        // 2. Add 3% GST only if toggle is ON
+        // Add 3% GST only if toggle is ON
         const finalPricePerGram = isGstOn ? (baseWithPremium * 1.03) : baseWithPremium;
         
-        // 3. 24KT Rate for 10 Grams
+        // 24KT Rate for 10 Grams
         const p24 = Math.round(finalPricePerGram * 10);
         
-        // 4. Custom Purity Calculations as requested:
-        // 22kt = 24kt rate x 96%
-        // 18kt = 24kt rate x 82%
-        const p22 = Math.round(p24 * 0.96);
-        const p18 = Math.round(p24 * 0.82);
+        // Purity Calculations based on 24KT Rate
+        const p22 = Math.round(p24 * 0.96); // 96% calculation
+        const p18 = Math.round(p24 * 0.82); // 82% calculation
 
-        // Update UI
+        // Update UI Text
         document.getElementById('p24').innerText = "₹" + p24.toLocaleString('en-IN');
         document.getElementById('p22').innerText = "₹" + p22.toLocaleString('en-IN');
         document.getElementById('p18').innerText = "₹" + p18.toLocaleString('en-IN');
