@@ -112,18 +112,12 @@
         } catch (e) { console.error("Sync error", e); }
     }
 
-    // Creates the live millisecond fluctuation
     function tickSimulation() {
         if (!baseRate) return;
-        
-        // Minor fluctuation
         const fluctuation = (Math.random() - 0.5) * 0.10;
         displayPrice += fluctuation;
-        
-        // Safety guard to keep tick within range of actual rate
         if (displayPrice > baseRate * 1.001) displayPrice -= 0.05;
         if (displayPrice < baseRate * 0.999) displayPrice += 0.05;
-
         updateUI();
     }
 
@@ -133,14 +127,13 @@
         const finalPricePerGram = isGstOn ? (displayPrice * 1.03) : displayPrice;
         
         const p24 = Math.round(finalPricePerGram * 10);
-        const p22 = Math.round(p24 * 0.96); 
+        const p22 = Math.round(p24 * 0.95); // UPDATED: 95% Calculation
         const p18 = Math.round(p24 * 0.82); 
 
         const el24 = document.getElementById('p24');
         const el22 = document.getElementById('p22');
         const el18 = document.getElementById('p18');
         
-        // Set colors based on price movement
         if (p24 > lastP24) {
             [el24, el22, el18].forEach(el => el.className = "price-display price-up");
         } else if (p24 < lastP24) {
@@ -152,8 +145,6 @@
         el18.innerText = "₹" + p18.toLocaleString('en-IN');
         
         lastP24 = p24;
-        
-        // Reset color quickly for the next tick
         setTimeout(() => { 
             [el24, el22, el18].forEach(el => el.className = "price-display");
         }, 300);
@@ -165,15 +156,15 @@
         if (!lastP24) return;
         const isGstOn = document.getElementById('taxToggle').checked;
         const gst = isGstOn ? "(Incl. 3% GST)" : "(Excl. GST)";
-        const p22 = Math.round(lastP24 * 0.96);
+        const p22 = Math.round(lastP24 * 0.95); // UPDATED: 95% for Share
         const p18 = Math.round(lastP24 * 0.82);
         
         const message = `*LIVE MUMBAI GOLD RATES*%0A💰 *24KT:* ₹${lastP24.toLocaleString('en-IN')}%0A✨ *22KT:* ₹${p22.toLocaleString('en-IN')}%0A💎 *18KT:* ₹${p18.toLocaleString('en-IN')}%0A*10g Rates ${gst}*%0A_Live Market Update_`;
         window.open(`https://wa.me/?text=${message}`, '_blank');
     }
 
-    setInterval(fetchLiveRates, 120000); // API Sync every 2 min
-    setInterval(tickSimulation, 600);    // Visual tick every 600ms
+    setInterval(fetchLiveRates, 120000); 
+    setInterval(tickSimulation, 600);    
 
     window.onload = fetchLiveRates;
 </script>
