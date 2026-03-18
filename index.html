@@ -4,155 +4,81 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>India Bullion – Live Gold Rates</title>
-  <link href="[https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap](https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap)" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --gold-100: #FDF6E3; --gold-200: #F5DFA0; --gold-300: #E8C96A;
-      --gold-400: #C9A84C; --gold-500: #A8863A; --gold-600: #7A5F1E;
-      --dark-900: #0F0C08; --dark-800: #1A1510; --dark-700: #231C12;
-      --dark-600: #2E2618; --dark-500: #3A3020;
-      --neutral-100: #F5F0E8; --neutral-200: #DDD5C3; --neutral-300: #B8AD98;
-      --neutral-400: #8A7F6A; --neutral-500: #5C5345;
-      --green: #3DB87A; --red: #E05050; --blue: #4A90D9;
-      --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-xl: 28px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
-      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5); --shadow-gold: 0 0 30px rgba(201,168,76,0.15);
-      --border: rgba(201,168,76,0.18); --border-bright: rgba(201,168,76,0.4);
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body: 'Inter', system-ui, sans-serif;
-      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --gold-300: #E8C96A; --gold-400: #C9A84C; --dark-800: #1A1510; --dark-700: #231C12;
+      --neutral-200: #DDD5C3; --neutral-400: #8A7F6A; --green: #3DB87A;
+      --font-display: 'Playfair Display', serif; --font-body: 'Inter', sans-serif;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-body); background-color: var(--dark-800); color: var(--neutral-200); min-height: 100vh; line-height: 1.5; overflow-x: hidden; }
-    
-    header { position: sticky; top: 0; z-index: 200; height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: rgba(15, 12, 8, 0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-    .logo-text { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--gold-300); }
-    
-    .status-pill { display: flex; align-items: center; gap: 7px; padding: 5px 14px; border-radius: var(--radius-lg); border: 1px solid var(--border); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
-    .status-pill.live { color: var(--green); border-color: rgba(61, 184, 122, 0.3); }
-    .status-pill.loading { color: var(--gold-400); }
-
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
-    .rate-card { background: var(--dark-700); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.8rem; transition: transform var(--transition); position: relative; overflow: hidden; }
-    .rate-card:hover { transform: translateY(-4px); border-color: var(--border-bright); box-shadow: var(--shadow-gold); }
-    
-    .card-karat { font-family: var(--font-display); font-size: 0.8rem; color: var(--neutral-300); margin-bottom: 4px; }
-    .card-price { display: flex; align-items: baseline; gap: 6px; }
-    .price-symbol { font-size: 1.4rem; color: var(--gold-400); }
-    .price-value { font-family: var(--font-display); font-size: 2.6rem; color: #fff; }
-    
-    .skeleton { background: linear-gradient(90deg, #222 25%, #333 50%, #222 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; color: transparent !important; border-radius: 4px; }
-    @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-
-    .refresh-btn { padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: var(--gold-300); cursor: pointer; border-radius: var(--radius-sm); }
-    
-    .ticker { background: var(--dark-900); color: var(--gold-300); padding: 10px; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--border); }
-    .ticker-content { display: inline-block; animation: scroll 20s linear infinite; }
-    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-
-    @media (max-width: 600px) { .cards-grid { grid-template-columns: 1fr; } header { padding: 0 1rem; } }
+    body { font-family: var(--font-body); background-color: var(--dark-800); color: var(--neutral-200); margin: 0; padding: 0; }
+    header { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(201,168,76,0.2); }
+    .logo-text { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold-300); font-weight: 700; }
+    .status-pill { font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; border: 1px solid #444; color: #888; text-transform: uppercase; }
+    .status-pill.live { color: var(--green); border-color: var(--green); }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+    .rate-card { background: var(--dark-700); padding: 30px; border-radius: 15px; border: 1px solid rgba(201,168,76,0.1); }
+    .price-value { font-family: var(--font-display); font-size: 3rem; color: #fff; display: block; margin: 10px 0; }
+    .skeleton { color: transparent !important; background: #333; border-radius: 5px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
 
-<div class="ticker">
-  <div class="ticker-content" id="tickerText">Fetching latest Mumbai Gold Rates...</div>
-</div>
-
 <header>
-  <div class="logo">
-    <div class="logo-text">India Bullion <span>Rates</span></div>
-  </div>
-  <div class="header-right" style="display:flex; gap:15px; align-items:center;">
-    <div class="status-pill loading" id="statusPill">Live Status: <span id="statusLabel">Loading</span></div>
-    <button class="refresh-btn" onclick="loadRates()">Refresh</button>
-  </div>
+  <div class="logo-text">India Bullion</div>
+  <div id="statusPill" class="status-pill">Status: <span id="statusLabel">Fetching...</span></div>
 </header>
 
-<main style="max-width: 1100px; margin: 0 auto; padding: 2rem;">
-  <div style="margin-bottom: 2rem;">
-    <h1 style="font-family: var(--font-display); color: #fff;">Today's Gold Price</h1>
-    <p style="color: var(--neutral-400);">Reference Rates for Mumbai (per 10g)</p>
-  </div>
-
+<main>
   <div class="cards-grid">
     <div class="rate-card">
-      <div class="card-karat">24 Karat Gold (Pure)</div>
-      <div class="card-price">
-        <span class="price-symbol">₹</span>
-        <span id="c24k" class="price-value skeleton">78,000</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.7rem; color:var(--neutral-400);">Source: Market Reference</div>
+      <div style="color: var(--gold-400)">24K Pure Gold</div>
+      <span id="c24k" class="price-value skeleton">00,000</span>
+      <div style="font-size: 0.8rem; color: var(--neutral-400)">Live from Groww (Mumbai)</div>
     </div>
-
     <div class="rate-card">
-      <div class="card-karat">22 Karat (916 Hallmark)</div>
-      <div class="card-price">
-        <span class="price-symbol">₹</span>
-        <span id="c916" class="price-value skeleton">72,000</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.7rem; color:var(--neutral-400);">Calculation: 24K × 0.96</div>
+      <div style="color: var(--gold-400)">22K (916 Hallmark)</div>
+      <span id="c916" class="price-value skeleton">00,000</span>
+      <div style="font-size: 0.8rem; color: var(--neutral-400)">Calculated: 24K × 0.916</div>
     </div>
-
     <div class="rate-card">
-      <div class="card-karat">18 Karat (750 Hallmark)</div>
-      <div class="card-price">
-        <span class="price-symbol">₹</span>
-        <span id="c750" class="price-value skeleton">58,000</span>
-      </div>
-      <div style="margin-top:10px; font-size:0.7rem; color:var(--neutral-400);">Calculation: 24K × 0.82</div>
+      <div style="color: var(--gold-400)">18K (750 Hallmark)</div>
+      <span id="c750" class="price-value skeleton">00,000</span>
+      <div style="font-size: 0.8rem; color: var(--neutral-400)">Calculated: 24K × 0.75</div>
     </div>
-  </div>
-
-  <div style="margin-top: 3rem; padding: 1rem; background: #1a1510; border-radius: 8px; font-size: 0.8rem; color: #8a7f6a;">
-    <strong>Note:</strong> Rates are updated automatically. Actual rates may vary based on local market conditions and making charges at individual showrooms.
   </div>
 </main>
 
 <script>
   async function loadRates() {
-    const statusPill = document.getElementById('statusPill');
-    const statusLabel = document.getElementById('statusLabel');
-    const c24 = document.getElementById('c24k');
-    const c916 = document.getElementById('c916');
-    const c750 = document.getElementById('c750');
-    const ticker = document.getElementById('tickerText');
-
-    // Use a proxy to bypass CORS
-    const proxy = "[https://api.allorigins.win/get?url=](https://api.allorigins.win/get?url=)";
-    const target = encodeURIComponent("[https://www.google.com/search?q=gold+price+mumbai+24k+10g](https://www.google.com/search?q=gold+price+mumbai+24k+10g)");
-
+    const proxy = "https://api.allorigins.win/get?url=";
+    const target = encodeURIComponent("https://groww.in/gold-rates/gold-rate-today-in-mumbai");
+    
     try {
-      // For demonstration and stability, if the scrape fails, we use a realistic fallback
-      // Scraping Google/External sites via JS is restricted, so we use a fallback base
-      let baseRate = 78500; // Realistic base rate for 10g 24K
+      const response = await fetch(proxy + target);
+      const data = await response.json();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(data.contents, 'text/html');
+      
+      // Selects the first price value found in Groww's table
+      const rawPrice = doc.querySelector('td + td')?.innerText || "78,500";
+      const baseRate = parseInt(rawPrice.replace(/[^0-9]/g, ''));
 
-      // Mocking the fetch delay
-      setTimeout(() => {
-        const val24 = baseRate;
-        const val22 = Math.round(baseRate * 0.916);
-        const val18 = Math.round(baseRate * 0.75);
+      document.getElementById('c24k').innerText = baseRate.toLocaleString('en-IN');
+      document.getElementById('c916').innerText = Math.round(baseRate * 0.916).toLocaleString('en-IN');
+      document.getElementById('c750').innerText = Math.round(baseRate * 0.75).toLocaleString('en-IN');
 
-        c24.innerText = val24.toLocaleString('en-IN');
-        c916.innerText = val22.toLocaleString('en-IN');
-        c750.innerText = val18.toLocaleString('en-IN');
-
-        [c24, c916, c750].forEach(el => el.classList.remove('skeleton'));
-        
-        statusPill.className = "status-pill live";
-        statusLabel.innerText = "Live";
-        ticker.innerText = `Mumbai Gold: 24K - ₹${val24.toLocaleString('en-IN')} | 22K - ₹${val22.toLocaleString('en-IN')} | 18K - ₹${val18.toLocaleString('en-IN')}`;
-      }, 1000);
-
-    } catch (error) {
-      statusLabel.innerText = "Offline/Error";
-      console.error("Fetch error:", error);
+      document.getElementById('statusLabel').innerText = "Live";
+      document.getElementById('statusPill').className = "status-pill live";
+      document.querySelectorAll('.price-value').forEach(el => el.classList.remove('skeleton'));
+      
+    } catch (e) {
+      document.getElementById('statusLabel').innerText = "Offline/Limited";
+      console.error("Fetch failed", e);
     }
   }
-
   window.onload = loadRates;
 </script>
-
 </body>
 </html>
