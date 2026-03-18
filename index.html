@@ -3,84 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>India Bullion – Mumbai Live</title>
+  <title>Mumbai Live Gold</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    :root { --gold: #C9A84C; --bg: #13110E; --card: #1C1915; --text: #DDD5C3; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-    .container { max-width: 500px; margin: 0 auto; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-    .logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; }
-    .status { font-size: 0.7rem; color: #3DB87A; border: 1px solid #3DB87A; padding: 4px 10px; border-radius: 20px; }
-    .rate-card { background: var(--card); border-radius: 15px; padding: 25px; margin-bottom: 20px; border: 1px solid #222; }
-    .label { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-    .price { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #fff; margin: 10px 0; display: block; }
-    .footer-note { font-size: 0.7rem; color: #666; text-align: center; margin-top: 20px; }
-    .loading { opacity: 0.5; filter: blur(2px); }
+    :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .app-container { width: 100%; max-width: 400px; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 25px; }
+    .brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 700; }
+    .status-badge { font-size: 0.6rem; padding: 4px 10px; border-radius: 12px; border: 1px solid #444; color: #888; text-transform: uppercase; }
+    .status-badge.live { color: #4CAF50; border-color: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.3); }
+    .card { background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #2A2A2A; position: relative; overflow: hidden; }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
+    .label { font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+    .price-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #FFF; margin: 5px 0; }
+    .unit { font-size: 0.8rem; color: #666; }
+    .loading { color: #444 !important; }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
   <header>
-    <div class="logo">Mumbai Bullion</div>
-    <div id="status" class="status">LIVE</div>
+    <div class="brand">MUMBAI BULLION</div>
+    <div id="status" class="status-badge">Connecting...</div>
   </header>
 
-  <div id="main-content">
-    <div class="rate-card">
-      <div class="label">24K Gold (10g)</div>
-      <span id="p24" class="price">₹78,500</span>
-    </div>
-
-    <div class="rate-card">
-      <div class="label">22K Gold (10g)</div>
-      <span id="p22" class="price">₹71,950</span>
-    </div>
-
-    <div class="rate-card">
-      <div class="label">18K Gold (10g)</div>
-      <span id="p18" class="price">₹58,870</span>
-    </div>
+  <div class="card">
+    <div class="label">24K Gold (Pure)</div>
+    <div id="p24" class="price-display loading">₹ --,---</div>
+    <div class="unit">Per 10 Grams</div>
   </div>
 
-  <p class="footer-note">Prices sourced from GoodReturns Mumbai. Refresh to update.</p>
+  <div class="card">
+    <div class="label">22K Gold (Standard)</div>
+    <div id="p22" class="price-display loading">₹ --,---</div>
+    <div class="unit">Per 10 Grams</div>
+  </div>
+
+  <div class="card">
+    <div class="label">18K Gold (Jewellery)</div>
+    <div id="p18" class="price-display loading">₹ --,---</div>
+    <div class="unit">Per 10 Grams</div>
+  </div>
 </div>
 
 <script>
-  async function fetchMumbaiGold() {
+  async function getGoldRates() {
     const status = document.getElementById('status');
-    const content = document.getElementById('main-content');
-    
+    // Using AllOrigins as the bridge to GoodReturns Mumbai
+    const url = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://www.goodreturns.in/gold-rates/mumbai.html");
+
     try {
-      // Using AllOrigins Proxy to visit GoodReturns Mumbai page
-      const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://www.goodreturns.in/gold-rates/mumbai.html')}`);
+      const response = await fetch(url);
       const data = await response.json();
       const html = data.contents;
 
-      // This searches the page for the first text that looks like a price (e.g., 78,500)
-      const priceRegex = /(\d{2,3},\d{3})/; 
-      const match = html.match(priceRegex);
+      // This pattern specifically finds the first 6-digit price (e.g., 1,58,090)
+      const matches = html.match(/(\d{1,2},\d{2},\d{3})/g);
 
-      if (match) {
-        const base24k = parseInt(match[0].replace(/,/g, ''));
-        
-        // Update the UI with real Mumbai data
-        document.getElementById('p24').innerText = "₹" + (base24k * 10).toLocaleString('en-IN');
-        document.getElementById('p22').innerText = "₹" + Math.round(base24k * 10 * 0.916).toLocaleString('en-IN');
-        document.getElementById('p18').innerText = "₹" + Math.round(base24k * 10 * 0.75).toLocaleString('en-IN');
-        
+      if (matches && matches.length > 0) {
+        // We pick the first match which is usually the 24K rate
+        const rate24kStr = matches[0];
+        const rate24kNum = parseInt(rate24kStr.replace(/,/g, ''));
+
+        // Update UI
+        document.getElementById('p24').innerText = "₹" + rate24kNum.toLocaleString('en-IN');
+        document.getElementById('p22').innerText = "₹" + Math.round(rate24kNum * 0.916).toLocaleString('en-IN');
+        document.getElementById('p18').innerText = "₹" + Math.round(rate24kNum * 0.75).toLocaleString('en-IN');
+
+        document.querySelectorAll('.price-display').forEach(el => el.classList.remove('loading'));
         status.innerText = "LIVE";
-        content.classList.remove('loading');
+        status.classList.add('live');
       }
-    } catch (err) {
-      status.innerText = "REFRESH NEEDED";
-      status.style.color = "#ff4444";
-      status.style.borderColor = "#ff4444";
+    } catch (e) {
+      status.innerText = "Update Failed";
+      status.style.borderColor = "#f44336";
+      status.style.color = "#f44336";
     }
   }
 
-  window.onload = fetchMumbaiGold;
+  window.onload = getGoldRates;
 </script>
 
 </body>
