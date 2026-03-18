@@ -100,8 +100,8 @@
             });
             const data = await response.json();
             
-            // Formula: Global Spot * 1.0470 (4.70% Premium)
-            baseRate = (data.price / 31.1035) * 1.0470;
+            // Formula: Global Spot * 1.0473 (4.73% Premium)
+            baseRate = (data.price / 31.1035) * 1.0473;
             displayPrice = baseRate;
             
             updateUI();
