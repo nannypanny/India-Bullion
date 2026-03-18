@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mumbai Live Gold Tracker</title>
+    <title>Mumbai Gold Rates - 10 Grams</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
@@ -14,41 +14,43 @@
         .status-badge { font-size: 0.6rem; padding: 4px 10px; border-radius: 12px; border: 1px solid #444; color: #888; text-transform: uppercase; }
         .status-badge.live { color: #4CAF50; border-color: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.2); }
         .card { background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #2A2A2A; position: relative; }
+        .card::before { content: ""; position: absolute; left: 0; top: 20%; height: 60%; width: 4px; background: var(--gold); border-radius: 0 4px 4px 0; }
         .label { font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
-        .price-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #FFF; margin: 5px 0; }
-        .unit { font-size: 0.8rem; color: #666; }
-        .loading { opacity: 0.3; }
-        .footer { text-align: center; font-size: 0.7rem; color: #444; margin-top: 20px; }
+        .price-display { font-family: 'Playfair Display', serif; font-size: 2.6rem; color: #FFF; margin: 5px 0; }
+        .unit { font-size: 0.8rem; color: #666; font-weight: 500; }
+        .footer { text-align: center; font-size: 0.7rem; color: #555; margin-top: 30px; line-height: 1.6; }
+        #timestamp { color: var(--gold); font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <div class="brand">MUMBAI GOLD LIVE</div>
-        <div id="status" class="status-badge">Updating...</div>
+        <div class="brand">MUMBAI BULLION</div>
+        <div id="status" class="status-badge">FETCHING...</div>
     </header>
 
     <div class="card">
         <div class="label">24K Gold (Pure)</div>
         <div id="p24" class="price-display">₹ --,---</div>
-        <div class="unit">Per 10 Grams</div>
+        <div class="unit">Price for 10 Grams</div>
     </div>
 
     <div class="card">
         <div class="label">22K Gold (Standard)</div>
         <div id="p22" class="price-display">₹ --,---</div>
-        <div class="unit">Per 10 Grams (916 Hallmark)</div>
+        <div class="unit">Price for 10 Grams (916 Hallmark)</div>
     </div>
 
     <div class="card">
         <div class="label">18K Gold (Jewellery)</div>
         <div id="p18" class="price-display">₹ --,---</div>
-        <div class="unit">Per 10 Grams (750 Hallmark)</div>
+        <div class="unit">Price for 10 Grams (750 Hallmark)</div>
     </div>
 
     <div class="footer">
-        Data provided by GoldAPI.io • Mumbai Market Rates
+        Live Market Data via GoldAPI.io<br>
+        Last Updated: <span id="timestamp">--:--:--</span>
     </div>
 </div>
 
@@ -57,6 +59,7 @@
 
     async function fetchLiveRates() {
         const status = document.getElementById('status');
+        const timeEl = document.getElementById('timestamp');
         
         try {
             // Fetching Gold price in INR
@@ -68,22 +71,26 @@
                 }
             });
 
-            if (!response.ok) throw new Error('API limit reached or invalid key');
+            if (!response.ok) throw new Error('Invalid Key or Limit Reached');
 
             const data = await response.json();
             
-            // API returns price per gram. 24K is the base 'price'.
-            const pricePerGram = data.price;
-            const rate24k = Math.round(pricePerGram * 10);
+            // API provides 'price' per gram. 
+            // We multiply by 10 to get the 10-gram rate for Mumbai.
+            const base24k_10g = Math.round(data.price * 10);
             
-            // Standard Indian calculations for 22K and 18K
-            const rate22k = Math.round(rate24k * 0.916);
-            const rate18k = Math.round(rate24k * 0.75);
+            // Standard Indian Jewelry Calculations:
+            const rate22k_10g = Math.round(base24k_10g * 0.916);
+            const rate18k_10g = Math.round(base24k_10g * 0.75);
 
-            // Update the UI
-            document.getElementById('p24').innerText = "₹" + rate24k.toLocaleString('en-IN');
-            document.getElementById('p22').innerText = "₹" + rate22k.toLocaleString('en-IN');
-            document.getElementById('p18').innerText = "₹" + rate18k.toLocaleString('en-IN');
+            // Update the Prices in UI
+            document.getElementById('p24').innerText = "₹" + base24k_10g.toLocaleString('en-IN');
+            document.getElementById('p22').innerText = "₹" + rate22k_10g.toLocaleString('en-IN');
+            document.getElementById('p18').innerText = "₹" + rate18k_10g.toLocaleString('en-IN');
+
+            // Set Timestamp
+            const now = new Date();
+            timeEl.innerText = now.toLocaleTimeString();
 
             status.innerText = "LIVE";
             status.classList.add('live');
@@ -96,7 +103,7 @@
         }
     }
 
-    // Run on load
+    // Load rates immediately when page opens
     window.onload = fetchLiveRates;
 </script>
 
