@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>India Bullion – Live Gold Rates</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+:root {
+  --gold:      #C9A84C;
+  --gold-light:#E8C96A;
+  --gold-dim:  #9A7A30;
+  --cream:     #FAF6EE;
+  --dark:      #1A1510;
+  --dark2:     #241E15;
+  --dark3:     #2E2618;
+  --border:    rgba(201,168,76,0.22);
+  --text:      #D9CEBC;
+  --text-dim:  #7A7060;
+  --green:     #4CAF7A;
+  --red:       #E05555;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark); color: var(--text);
+  min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(201,168,76,0.05) 0%, transparent 55%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(26,21,16,0.95); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem; font-weight: 700; color: var(--gold);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-gem {
+  width: 28px; height: 28px; background: var(--gold);
+  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+}
+.header-right { display: flex; align-items: center; gap: 1.2rem; }
+
+.conn-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border);
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.07em;
+  text-transform: uppercase; background: var(--dark2); transition: all 0.3s;
+}
+.conn-pill .dot { width: 7px; height: 7px; border-radius: 50%; transition: all 0.3s; }
+.conn-pill.loading  { color: var(--gold-dim); }
+.conn-pill.loading  .dot { background: var(--gold); animation: blink 1s ease-in-out infinite; }
+.conn-pill.live     { color: var(--green); border-color: rgba(76,175,122,0.3); }
+.conn-pill.live     .dot { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pdot 1.8s ease-in-out infinite; }
+.conn-pill.offline  { color: var(--red); border-color: rgba(224,85,85,0.3); }
+.conn-pill.offline  .dot { background: var(--red); }
+
+@keyframes pdot  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.last-updated { font-size: 0.72rem; color: var(--text-dim); }
+
+.refresh-btn {
+  background: transparent; border: 1px solid var(--border); color: var(--gold-dim);
+  padding: 6px 14px; border-radius: 6px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.75rem;
+  display: flex; align-items: center; gap: 5px; transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: var(--gold); color: var(--gold); }
+.refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TICKER ── */
+.ticker-bar {
+  background: var(--dark2); border-bottom: 1px solid var(--border);
+  overflow: hidden; height: 36px; display: flex; align-items: center;
+}
+.ticker-track { display: flex; gap: 3rem; animation: ticker 30s linear infinite; white-space: nowrap; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; color: var(--text-dim); }
+.ticker-item span { color: var(--gold); margin-left: 6px; }
+
+/* ── MAIN ── */
+main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+.page-title {
+  margin-bottom: 2rem; display: flex; align-items: flex-end;
+  justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.page-title h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 600; color: var(--cream); line-height: 1.15;
+}
+.page-title h1 em { font-style: normal; color: var(--gold); }
+.date-badge {
+  background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 14px; font-size: 0.8rem; color: var(--gold-dim); letter-spacing: 0.06em;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex; gap: 2px; background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px; width: fit-content; margin-bottom: 2rem;
+}
+.tab-btn {
+  padding: 8px 20px; border: none; background: transparent; color: var(--text-dim); cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+  border-radius: 5px; transition: all 0.2s; letter-spacing: 0.03em;
+}
+.tab-btn.active { background: var(--gold); color: var(--dark); }
+.tab-btn:not(.active):hover { color: var(--gold); }
+
+/* ── CONTROLS ── */
+.controls-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.4rem; flex-wrap: wrap; gap: 0.8rem;
+}
+.view-toggle {
+  display: flex; gap: 2px; background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px;
+}
+.vt-btn {
+  background: transparent; border: none; color: var(--text-dim);
+  padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.75rem; transition: all 0.2s;
+}
+.vt-btn.active { background: var(--dark3); color: var(--gold); }
+
+/* ── CARDS ── */
+.cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
+@media(max-width:760px){ .cards { grid-template-columns: 1fr; } }
+@media(min-width:480px) and (max-width:760px){ .cards { grid-template-columns: 1fr 1fr; } }
+
+.card {
+  background: var(--dark2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.6rem 1.4rem; position: relative; overflow: hidden;
+  transition: transform 0.22s, box-shadow 0.22s; animation: fadeUp 0.5s ease both;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,168,76,0.18); }
+.card:nth-child(1){ animation-delay:.05s } .card:nth-child(2){ animation-delay:.12s } .card:nth-child(3){ animation-delay:.19s }
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg,transparent,var(--gold),transparent); opacity:.6;
+}
+.card.highlight { border-color: rgba(201,168,76,0.45); background: linear-gradient(140deg,rgba(201,168,76,0.08) 0%,var(--dark2) 60%); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+.card-label {
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px;
+}
+.purity-badge {
+  background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); color: var(--gold);
+  border-radius: 4px; padding: 1px 7px; font-size: 0.68rem; letter-spacing: 0.06em;
+}
+.card-rate {
+  font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 700;
+  color: var(--cream); line-height: 1; margin-bottom: 0.3rem; letter-spacing: -0.01em;
+  min-height: 2.6rem;
+}
+.card-rate .rupee { font-size: 1.6rem; color: var(--gold); margin-right: 2px; }
+.card-sub { font-size: 0.73rem; color: var(--text-dim); margin-bottom: 0.8rem; }
+.card-sub strong { color: var(--text); font-weight: 500; }
+
+.change-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.73rem; font-weight: 500; margin-top: 0.5rem;
+}
+.up   { color: var(--green); }
+.down { color: var(--red); }
+.flat { color: var(--text-dim); }
+
+.flash-up   { animation: flashG 0.7s ease; }
+.flash-down { animation: flashR 0.7s ease; }
+@keyframes flashG { 0%{color:var(--green)} 100%{color:var(--cream)} }
+@keyndef flashR { 0%{color:var(--red)}   100%{color:var(--cream)} }
+
+/* ── TABLE ── */
+.rate-table { width:100%; border-collapse:collapse; margin-bottom:2.5rem; font-size:0.85rem; }
+.rate-table thead tr { border-bottom: 1px solid var(--border); }
+.rate-table th { text-align:left; padding:10px 16px; font-size:0.7rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); }
+.rate-table tbody tr { border-bottom:1px solid rgba(201,168,76,0.07); transition:background 0.15s; }
+.rate-table tbody tr:hover { background:rgba(201,168,76,0.04); }
+.rate-table td { padding:14px 16px; color:var(--text); }
+.rate-table td:nth-child(2), .rate-table td:nth-child(3) { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:var(--cream); }
+.pc { display:flex; align-items:center; gap:8px; }
+.dc { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── FORMULA STRIP ── */
+.formula-strip { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2.5rem; }
+@media(max-width:560px){ .formula-strip { grid-template-columns:1fr; } }
+.formula-card { background:var(--dark2); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; display:flex; align-items:center; gap:1rem; }
+.fi { width:42px;height:42px;flex-shrink:0;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem; }
+.ft { font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:3px; }
+.fe { font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold);font-weight:600; }
+
+/* ── SOURCE BADGE ── */
+.source-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 2rem; font-size: 0.75rem; color: var(--text-dim);
+}
+.source-badge {
+  background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 10px; color: var(--gold-dim); font-size: 0.7rem;
+}
+
+/* ── DISCLAIMER ── */
+.disclaimer { background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.4rem;font-size:0.74rem;color:var(--text-dim);line-height:1.6; }
+.disclaimer strong { color:var(--text);font-weight:500; }
+.disclaimer a { color:var(--gold-dim); text-decoration:none; }
+.disclaimer a:hover { color:var(--gold); }
+
+/* ── SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg,var(--dark3) 25%,rgba(201,168,76,0.06) 50%,var(--dark3) 75%);
+  background-size: 200% 100%; animation: shimmer 1.6s infinite;
+  border-radius: 4px; color: transparent !important; user-select: none; display: inline-block; min-width: 100px;
+}
+@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+
+/* ── ERROR BANNER ── */
+.banner { border-radius:10px;padding:1rem 1.4rem;font-size:0.82rem;margin-bottom:1.5rem;line-height:1.6;display:none; }
+.banner.err { background:rgba(224,85,85,0.08);border:1px solid rgba(224,85,85,0.25);color:var(--red);display:block; }
+.banner.warn { background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);color:var(--gold-dim);display:block; }
+.banner a { color: var(--gold); }
+```
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-gem"></div>India Bullion</div>
+  <div class="header-right">
+    <div class="conn-pill loading" id="connPill">
+      <div class="dot"></div><span id="connLabel">Loading…</span>
+    </div>
+    <div class="last-updated" id="lastUpdated">–</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadRates()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<!-- TICKER -->
+
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="ticker-item">24KT Gold · Mumbai<span id="tk24">–</span></span>
+    <span class="ticker-item">916 (×0.96)<span id="tk916">–</span></span>
+    <span class="ticker-item">750 (×0.82)<span id="tk750">–</span></span>
+    <span class="ticker-item">Source<span>groww.in · Mumbai</span></span>
+    <span class="ticker-item">Incl. GST rates</span>
+    <span class="ticker-item">24KT Gold · Mumbai<span id="tk24b">–</span></span>
+    <span class="ticker-item">916 (×0.96)<span id="tk916b">–</span></span>
+    <span class="ticker-item">750 (×0.82)<span id="tk750b">–</span></span>
+    <span class="ticker-item">Source<span>groww.in · Mumbai</span></span>
+    <span class="ticker-item">Incl. GST rates</span>
+  </div>
+</div>
+
+<main>
+  <div class="page-title">
+    <h1>Mumbai Gold Rates<br><em>Today's Reference Price</em></h1>
+    <div class="date-badge" id="dateBadge">–</div>
+  </div>
+
+  <div class="source-row">
+    <span>Data source:</span>
+    <span class="source-badge">groww.in · gold-rate-today-in-mumbai</span>
+    <span>· Rates include GST</span>
+  </div>
+
+  <!-- TABS -->
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ex',this)">Rate Before GST</button>
+    <button class="tab-btn" onclick="switchTab('in',this)">Rate After GST (3%)</button>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="controls-row">
+    <span style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;">Per 10 grams</span>
+    <div class="view-toggle">
+      <button class="vt-btn active" onclick="setView('cards',this)">Cards</button>
+      <button class="vt-btn" onclick="setView('table',this)">Table</button>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+
+  <div class="cards" id="cardsView">
+    <!-- 24K -->
+    <div class="card highlight">
+      <div class="card-label">Pure Gold <span class="purity-badge">24KT · 999</span></div>
+      <div class="card-rate"><span class="rupee">₹</span><span id="c24k" class="skeleton">––––––</span></div>
+      <div class="card-sub">per 10 grams · <strong>Groww Source Rate</strong></div>
+      <div class="change-row" id="chg24"></div>
+    </div>
+    <!-- 916 -->
+    <div class="card">
+      <div class="card-label">22 Karat Gold <span class="purity-badge">916</span></div>
+      <div class="card-rate"><span class="rupee">₹</span><span id="c916" class="skeleton">––––––</span></div>
+      <div class="card-sub">per 10 grams · <strong>24K × 0.96</strong></div>
+      <div class="change-row" id="chg916"></div>
+    </div>
+    <!-- 750 -->
+    <div class="card">
+      <div class="card-label">18 Karat Gold <span class="purity-badge">750</span></div>
+      <div class="card-rate"><span class="rupee">₹</span><span id="c750" class="skeleton">––––––</span></div>
+      <div class="card-sub">per 10 grams · <strong>24K × 0.82</strong></div>
+      <div class="change-row" id="chg750"></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+
+  <div id="tableView" style="display:none;margin-bottom:2.5rem;">
+    <table class="rate-table">
+      <thead>
+        <tr><th>Purity</th><th>Rate (ex-GST)</th><th>Rate (incl. 3% GST)</th><th>Formula</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="pc"><div class="dc" style="background:var(--gold-light)"></div>24KT / 999</div></td>
+          <td id="t24ex">–</td><td id="t24in">–</td>
+          <td style="color:var(--text-dim);font-size:0.78rem">Groww source</td>
+        </tr>
+        <tr>
+          <td><div class="pc"><div class="dc" style="background:var(--gold)"></div>22KT / 916</div></td>
+          <td id="t916ex">–</td><td id="t916in">–</td>
+          <td style="color:var(--text-dim);font-size:0.78rem">24K × 0.96</td>
+        </tr>
+        <tr>
+          <td><div class="pc"><div class="dc" style="background:var(--gold-dim)"></div>18KT / 750</div></td>
+          <td id="t750ex">–</td><td id="t750in">–</td>
+          <td style="color:var(--text-dim);font-size:0.78rem">24K × 0.82</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FORMULA STRIP -->
+
+  <div class="formula-strip">
+    <div class="formula-card"><div class="fi">◈</div><div><div class="ft">916 Calculation</div><div class="fe">24K Rate × 0.96</div></div></div>
+    <div class="formula-card"><div class="fi">◇</div><div><div class="ft">750 Calculation</div><div class="fe">24K Rate × 0.82</div></div></div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong> Rates are fetched from <a href="https://groww.in/gold-rates/gold-rate-today-in-mumbai" target="_blank">groww.in</a> (Mumbai, 24K per 10g).
+    Groww's rates include GST — the "Before GST" tab divides by 1.03 to derive ex-GST values.
+    916 and 750 values use fixed multipliers ×0.96 and ×0.82 on the 24K rate.
+    Rates refresh every 30 minutes. These are reference prices only.
+  </div>
+</main>
+
+<script>
+  // ── State
+  let tab = 'ex', view = 'cards';
+  let rate24k_incgst = null;   // 24K per 10g as returned by Groww (incl. GST)
+  let prevRate = null;
+
+  const fmt     = n => Math.round(n).toLocaleString('en-IN');
+  const rupee   = n => '₹' + fmt(n);
+  const exGST   = n => n / 1.03;   // Groww publishes incl-GST; strip it for ex-GST tab
+
+  // ── Date badge
+  function setDate() {
+    const now = new Date();
+    document.getElementById('dateBadge').textContent =
+      String(now.getDate()).padStart(2,'0') + '/' +
+      String(now.getMonth()+1).padStart(2,'0') + '/' +
+      String(now.getFullYear()).slice(-2);
+  }
+
+  // ── Connection pill
+  function setConn(state, label) {
+    const p = document.getElementById('connPill');
+    p.className = 'conn-pill ' + state;
+    document.getElementById('connLabel').textContent = label;
+  }
+
+  // ── Banner
+  function setBanner(type, html) {
+    const b = document.getElementById('banner');
+    b.className = type ? 'banner ' + type : 'banner';
+    b.innerHTML = html || '';
+  }
+
+  // ── Render all values from rate24k_incgst
+  function render() {
+    if (rate24k_incgst === null) return;
+
+    const incgst = rate24k_incgst;          // 24K incl. GST  (from Groww)
+    const exgst  = exGST(incgst);           // 24K ex-GST
+
+    const r916_in = incgst * 0.96;
+    const r750_in = incgst * 0.82;
+    const r916_ex = exgst  * 0.96;
+    const r750_ex = exgst  * 0.82;
+
+    // Which values to show in the main cards
+    const show24  = tab === 'in' ? incgst   : exgst;
+    const show916 = tab === 'in' ? r916_in  : r916_ex;
+    const show750 = tab === 'in' ? r750_in  : r750_ex;
+
+    const flash = prevRate !== null
+      ? (incgst > prevRate ? 'flash-up' : incgst < prevRate ? 'flash-down' : '') : '';
+
+    const setCard = (id, val) => {
+      const el = document.getElementById(id);
+      el.classList.remove('skeleton','flash-up','flash-down');
+      el.textContent = fmt(val);
+      if (flash) { void el.offsetWidth; el.classList.add(flash); }
+    };
+
+    setCard('c24k',  show24);
+    setCard('c916',  show916);
+    setCard('c750',  show750);
+
+    // Table always shows both columns
+    document.getElementById('t24ex').textContent  = rupee(exgst);
+    document.getElementById('t916ex').textContent = rupee(r916_ex);
+    document.getElementById('t750ex').textContent = rupee(r750_ex);
+    document.getElementById('t24in').textContent  = rupee(incgst);
+    document.getElementById('t916in').textContent = rupee(r916_in);
+    document.getElementById('t750in').textContent = rupee(r750_in);
+
+    // Ticker
+    const tick = v => rupee(tab === 'in' ? v * 1 : exGST(v));
+    ['tk24','tk24b'].forEach(id   => document.getElementById(id).textContent   = tick(incgst));
+    ['tk916','tk916b'].forEach(id => document.getElementById(id).textContent   = tick(r916_in));
+    ['tk750','tk750b'].forEach(id => document.getElementById(id).textContent   = tick(r750_in));
+
+    document.getElementById('lastUpdated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+    prevRate = incgst;
+  }
+
+  // ── FETCH from Groww via CORS proxy
+  async function loadRates() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spinning');
+    setConn('loading', 'Fetching…');
+
+    try {
+      // allorigins returns the full server-rendered HTML of Groww's page
+      const targetUrl = 'https://groww.in/gold-rates/gold-rate-today-in-mumbai';
+      const proxyUrl  = 'https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error('Proxy error ' + res.status);
+      const data = await res.json();
+      const html = data.contents;
+
+      // ── Parse strategy 1: look for "24K Gold / 10gm" section and grab ₹XXXXXX.XX
+      // Groww renders: ₹159155.70 right after the 24K heading
+      const patterns = [
+        // Matches the first large rupee value (6 digits) after "24K"
+        /24K Gold[^₹]{0,200}?₹\s*([\d,]+(?:\.\d+)?)/i,
+        /24k[^₹]{0,100}?₹\s*([\d,]+(?:\.\d+)?)/i,
+        // Generic: first number in 1,50,000–2,00,000 range
+        /₹\s*(1[5-9][0-9],[\d,]+)/,
+        /₹\s*([\d,]{7,10})/,
+      ];
+
+      let rate = null;
+
+      for (const re of patterns) {
+        const m = html.match(re);
+        if (m) {
+          const cleaned = m[1].replace(/,/g,'');
+          const n = parseFloat(cleaned);
+          if (n >= 100000 && n <= 500000) { rate = n; break; }
+        }
+      }
+
+      // ── Parse strategy 2: scan all numbers in gold range (1,00,000 – 3,00,000)
+      if (!rate) {
+        const allNums = [...html.matchAll(/₹\s*([\d]{1,3}(?:,[\d]{2,3})+(?:\.\d+)?)/g)]
+          .map(m => parseFloat(m[1].replace(/,/g,'')))
+          .filter(n => n >= 100000 && n <= 500000);
+        if (allNums.length) rate = allNums[0];
+      }
+
+      if (!rate) throw new Error('Could not extract rate from Groww page');
+
+      rate24k_incgst = rate;
+      setConn('live', 'Live');
+      setBanner(null, '');
+      render();
+
+    } catch (err) {
+      console.warn('Fetch error:', err.message);
+      setConn('offline', 'Offline');
+
+      if (rate24k_incgst === null) {
+        // Show a friendly error + keep UI usable with last-known/demo value
+        setBanner('err', `
+          ⚠ <strong>Could not load rate from Groww.</strong>
+          The CORS proxy may be temporarily unavailable, or Groww's page structure changed.<br>
+          <a href="https://groww.in/gold-rates/gold-rate-today-in-mumbai" target="_blank">Check Groww directly →</a>
+          &nbsp;|&nbsp; Try refreshing in a moment.
+        `);
+        // Fallback demo so the layout isn't blank
+        rate24k_incgst = 159155.70;
+        render();
+      } else {
+        setBanner('warn', '⚠ Could not refresh — showing last fetched rate.');
+      }
+    } finally {
+      btn.classList.remove('spinning');
+    }
+  }
+
+  // ── Tab / view
+  function switchTab(t, el) {
+    tab = t;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active'); render();
+  }
+  function setView(v, el) {
+    view = v;
+    document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('cardsView').style.display = v==='cards' ? 'grid' : 'none';
+    document.getElementById('tableView').style.display = v==='table' ? 'block' : 'none';
+  }
+
+  // ── Init
+  setDate();
+  setInterval(setDate, 60000);
+  loadRates();
+  // Auto-refresh every 30 minutes (Groww updates rates daily, not real-time)
+  setInterval(loadRates, 30 * 60 * 1000);
+</script>
+
+</body>
+</html>
