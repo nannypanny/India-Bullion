@@ -37,19 +37,19 @@
     </div>
 
     <div class="card">
-        <div class="label">22K Gold (Standard)</div>
+        <div class="label">22K Gold (916 Hallmark)</div>
         <div id="p22" class="price-display">₹ --,---</div>
-        <div class="unit">Price for 10 Grams (916 Hallmark)</div>
+        <div class="unit">Standard Jewellery (10g)</div>
     </div>
 
     <div class="card">
-        <div class="label">18K Gold (Jewellery)</div>
+        <div class="label">18K Gold (750 Hallmark)</div>
         <div id="p18" class="price-display">₹ --,---</div>
-        <div class="unit">Price for 10 Grams (750 Hallmark)</div>
+        <div class="unit">Diamond/Stone Settings (10g)</div>
     </div>
 
     <div class="footer">
-        Live Market Data via GoldAPI.io<br>
+        Real-Time Mumbai Market Data via GoldAPI.io<br>
         Last Updated: <span id="timestamp">--:--:--</span>
     </div>
 </div>
@@ -62,7 +62,7 @@
         const timeEl = document.getElementById('timestamp');
         
         try {
-            // Fetching Gold price in INR
+            // XAU/INR endpoint gives spot price per gram in Rupees
             const response = await fetch("https://www.goldapi.io/api/XAU/INR", {
                 method: 'GET',
                 headers: {
@@ -71,24 +71,22 @@
                 }
             });
 
-            if (!response.ok) throw new Error('Invalid Key or Limit Reached');
+            if (!response.ok) throw new Error('API Sync Failed');
 
             const data = await response.json();
             
-            // API provides 'price' per gram. 
-            // We multiply by 10 to get the 10-gram rate for Mumbai.
+            // Logic: Take the gram price from API and multiply by 10
             const base24k_10g = Math.round(data.price * 10);
             
-            // Standard Indian Jewelry Calculations:
-            const rate22k_10g = Math.round(base24k_10g * 0.916);
+            // Indian standard purity factors
+            const rate22k_10g = Math.round(base24k_10g * 0.9167);
             const rate18k_10g = Math.round(base24k_10g * 0.75);
 
-            // Update the Prices in UI
+            // Update UI with Indian Number Formatting
             document.getElementById('p24').innerText = "₹" + base24k_10g.toLocaleString('en-IN');
             document.getElementById('p22').innerText = "₹" + rate22k_10g.toLocaleString('en-IN');
             document.getElementById('p18').innerText = "₹" + rate18k_10g.toLocaleString('en-IN');
 
-            // Set Timestamp
             const now = new Date();
             timeEl.innerText = now.toLocaleTimeString();
 
@@ -96,14 +94,12 @@
             status.classList.add('live');
 
         } catch (error) {
-            console.error("Error:", error);
-            status.innerText = "API ERROR";
+            console.error("Connection Error:", error);
+            status.innerText = "OFFLINE";
             status.style.color = "#f44336";
-            status.style.borderColor = "#f44336";
         }
     }
 
-    // Load rates immediately when page opens
     window.onload = fetchLiveRates;
 </script>
 
