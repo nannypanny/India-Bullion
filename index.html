@@ -1,89 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mumbai Live Gold</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
-    .app-container { width: 100%; max-width: 400px; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 25px; }
-    .brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 700; }
-    .status-badge { font-size: 0.6rem; padding: 4px 10px; border-radius: 12px; border: 1px solid #444; color: #888; text-transform: uppercase; }
-    .status-badge.live { color: #4CAF50; border-color: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.3); }
-    .card { background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #2A2A2A; position: relative; overflow: hidden; }
-    .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
-    .label { font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
-    .price-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #FFF; margin: 5px 0; }
-    .unit { font-size: 0.8rem; color: #666; }
-    .loading { color: #444 !important; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mumbai Live Gold Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 400px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 25px; }
+        .brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 700; }
+        .status-badge { font-size: 0.6rem; padding: 4px 10px; border-radius: 12px; border: 1px solid #444; color: #888; text-transform: uppercase; }
+        .status-badge.live { color: #4CAF50; border-color: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,0.2); }
+        .card { background: var(--card); border-radius: 16px; padding: 24px; margin-bottom: 16px; border: 1px solid #2A2A2A; position: relative; }
+        .label { font-size: 0.75rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .price-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #FFF; margin: 5px 0; }
+        .unit { font-size: 0.8rem; color: #666; }
+        .loading { opacity: 0.3; }
+        .footer { text-align: center; font-size: 0.7rem; color: #444; margin-top: 20px; }
+    </style>
 </head>
 <body>
 
 <div class="app-container">
-  <header>
-    <div class="brand">MUMBAI BULLION</div>
-    <div id="status" class="status-badge">Connecting...</div>
-  </header>
+    <header>
+        <div class="brand">MUMBAI GOLD LIVE</div>
+        <div id="status" class="status-badge">Updating...</div>
+    </header>
 
-  <div class="card">
-    <div class="label">24K Gold (Pure)</div>
-    <div id="p24" class="price-display loading">₹ --,---</div>
-    <div class="unit">Per 10 Grams</div>
-  </div>
+    <div class="card">
+        <div class="label">24K Gold (Pure)</div>
+        <div id="p24" class="price-display">₹ --,---</div>
+        <div class="unit">Per 10 Grams</div>
+    </div>
 
-  <div class="card">
-    <div class="label">22K Gold (Standard)</div>
-    <div id="p22" class="price-display loading">₹ --,---</div>
-    <div class="unit">Per 10 Grams</div>
-  </div>
+    <div class="card">
+        <div class="label">22K Gold (Standard)</div>
+        <div id="p22" class="price-display">₹ --,---</div>
+        <div class="unit">Per 10 Grams (916 Hallmark)</div>
+    </div>
 
-  <div class="card">
-    <div class="label">18K Gold (Jewellery)</div>
-    <div id="p18" class="price-display loading">₹ --,---</div>
-    <div class="unit">Per 10 Grams</div>
-  </div>
+    <div class="card">
+        <div class="label">18K Gold (Jewellery)</div>
+        <div id="p18" class="price-display">₹ --,---</div>
+        <div class="unit">Per 10 Grams (750 Hallmark)</div>
+    </div>
+
+    <div class="footer">
+        Data provided by GoldAPI.io • Mumbai Market Rates
+    </div>
 </div>
 
 <script>
-  async function getGoldRates() {
-    const status = document.getElementById('status');
-    // Using AllOrigins as the bridge to GoodReturns Mumbai
-    const url = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://www.goodreturns.in/gold-rates/mumbai.html");
+    const MY_API_KEY = 'goldapi-3j1fsmmvn1osn-io';
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      const html = data.contents;
+    async function fetchLiveRates() {
+        const status = document.getElementById('status');
+        
+        try {
+            // Fetching Gold price in INR
+            const response = await fetch("https://www.goldapi.io/api/XAU/INR", {
+                method: 'GET',
+                headers: {
+                    "x-access-token": MY_API_KEY,
+                    "Content-Type": "application/json"
+                }
+            });
 
-      // This pattern specifically finds the first 6-digit price (e.g., 1,58,090)
-      const matches = html.match(/(\d{1,2},\d{2},\d{3})/g);
+            if (!response.ok) throw new Error('API limit reached or invalid key');
 
-      if (matches && matches.length > 0) {
-        // We pick the first match which is usually the 24K rate
-        const rate24kStr = matches[0];
-        const rate24kNum = parseInt(rate24kStr.replace(/,/g, ''));
+            const data = await response.json();
+            
+            // API returns price per gram. 24K is the base 'price'.
+            const pricePerGram = data.price;
+            const rate24k = Math.round(pricePerGram * 10);
+            
+            // Standard Indian calculations for 22K and 18K
+            const rate22k = Math.round(rate24k * 0.916);
+            const rate18k = Math.round(rate24k * 0.75);
 
-        // Update UI
-        document.getElementById('p24').innerText = "₹" + rate24kNum.toLocaleString('en-IN');
-        document.getElementById('p22').innerText = "₹" + Math.round(rate24kNum * 0.916).toLocaleString('en-IN');
-        document.getElementById('p18').innerText = "₹" + Math.round(rate24kNum * 0.75).toLocaleString('en-IN');
+            // Update the UI
+            document.getElementById('p24').innerText = "₹" + rate24k.toLocaleString('en-IN');
+            document.getElementById('p22').innerText = "₹" + rate22k.toLocaleString('en-IN');
+            document.getElementById('p18').innerText = "₹" + rate18k.toLocaleString('en-IN');
 
-        document.querySelectorAll('.price-display').forEach(el => el.classList.remove('loading'));
-        status.innerText = "LIVE";
-        status.classList.add('live');
-      }
-    } catch (e) {
-      status.innerText = "Update Failed";
-      status.style.borderColor = "#f44336";
-      status.style.color = "#f44336";
+            status.innerText = "LIVE";
+            status.classList.add('live');
+
+        } catch (error) {
+            console.error("Error:", error);
+            status.innerText = "API ERROR";
+            status.style.color = "#f44336";
+            status.style.borderColor = "#f44336";
+        }
     }
-  }
 
-  window.onload = getGoldRates;
+    // Run on load
+    window.onload = fetchLiveRates;
 </script>
 
 </body>
