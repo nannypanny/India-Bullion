@@ -61,7 +61,7 @@
             console.log('Exchange Rate (USD/INR):', usdInr);
 
             // 2. Fetch Gold Spot (USD per troy oz)
-            const goldRes = await fetch('https://gold-api.com/api/v1/goldprice', {
+            const goldRes = await fetch('https://api.gold-api.com/price/XAU', {
                 headers: { 'x-api-key': API_KEY }
             });
             if (!goldRes.ok) throw new Error(`Gold API Error: ${goldRes.status}`);
