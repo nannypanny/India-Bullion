@@ -3,115 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUMBullion Live - Mumbai Gold Rates</title>
+    <title>MUMBullion Live</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --gold: #D4AF37; 
-            --bg: #0D0D0D; 
-            --card: #1A1A1A; 
-            --text: #E0E0E0; 
-            --up: #4CAF50;
-            --down: #F44336;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            background: var(--card);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            color: var(--gold);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .live-tag {
-            font-size: 10px;
-            background: var(--down);
-            padding: 2px 8px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 5px;
-            animation: blink 1.5s infinite;
-        }
-
+        :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; --up: #4CAF50; --down: #F44336; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 400px; padding: 20px; background: var(--card); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        header { text-align: center; margin-bottom: 25px; }
+        .brand { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+        .live-tag { font-size: 10px; background: var(--down); padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; animation: blink 1.5s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
-
-        .rates-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .card {
-            background: #252525;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--gold);
-            transition: transform 0.3s ease;
-        }
-
+        .rates-grid { display: flex; flex-direction: column; gap: 12px; }
+        .card { background: #252525; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--gold); }
         .label { font-size: 14px; font-weight: 600; color: #BBB; }
         .price { font-size: 20px; font-weight: 700; color: #FFF; }
-
-        .trend-up { color: var(--up) !important; }
-        .trend-down { color: var(--down) !important; }
-
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            text-align: center;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        #timestamp { color: var(--gold); font-weight: 600; }
+        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; margin-top: 20px; }
+        .footer { margin-top: 20px; font-size: 10px; text-align: center; color: #666; line-height: 1.5; }
+        #timestamp { color: var(--gold); }
     </style>
 </head>
 <body>
@@ -119,134 +27,97 @@
 <div class="app-container">
     <header>
         <div class="brand">MUMBullion Live</div>
-        <div class="live-tag">LIVE MARKET</div>
+        <div class="live-tag">LIVE TICK</div>
     </header>
 
     <div class="rates-grid">
-        <div class="card">
-            <span class="label">24KT (999)</span>
-            <span class="price" id="p24">₹--</span>
-        </div>
-        <div class="card">
-            <span class="label">22KT (916)</span>
-            <span class="price" id="p22">₹--</span>
-        </div>
-        <div class="card">
-            <span class="label">18KT (750)</span>
-            <span class="price" id="p18">₹--</span>
-        </div>
-        <div class="card" style="border-left-color: #A52A2A;">
-            <span class="label">14KT (585)</span>
-            <span class="price" id="p14">₹--</span>
-        </div>
-        <div class="card" style="border-left-color: #808080;">
-            <span class="label">9KT (375)</span>
-            <span class="price" id="p9">₹--</span>
-        </div>
+        <div class="card"><span class="label">24KT (999)</span><span class="price" id="p24">₹--</span></div>
+        <div class="card"><span class="label">22KT (916)</span><span class="price" id="p22">₹--</span></div>
+        <div class="card"><span class="label">18KT (750)</span><span class="price" id="p18">₹--</span></div>
+        <div class="card"><span class="label">14KT (585)</span><span class="price" id="p14">₹--</span></div>
+        <div class="card"><span class="label">9KT (375)</span><span class="price" id="p9">₹--</span></div>
     </div>
 
-    <div class="controls">
-        <button class="btn-whatsapp" onclick="shareOnWhatsApp()">
-            Share on WhatsApp
-        </button>
-    </div>
+    <button class="btn-whatsapp" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
 
     <div class="footer">
         Reference: Gold-API.com • Standard Mumbai Bullion<br>
-        Formula: (Spot + $3) * Duty (1.06) * Wholesale (1.001)<br>
-        Next API Sync (10m): <span id="timestamp">--:--:--</span>
+        Interval: 10 Minutes Sync<br>
+        Last Sync: <span id="timestamp">--:--:--</span>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    const MY_API_KEY = 'goldapi-3j1fsmmvn1osn-io'; // Your Gold-API.com Key
+    const API_KEY = 'ae0c78ed4e722063cf21fc133ba2940c70db34279ca8f155837376b92e4bb4d9';
     const GOLD_URL = 'https://gold-api.com/api/v1/goldprice';
-    
-    let last24kt = 0;
-    let previous24kt = 0;
+    let baseRateA = 0;
 
-    async function fetchLiveRates() {
+    async function fetchRates() {
         try {
-            // 1. Fetch Live USD/INR
-            const fxResponse = await fetch('https://open.er-api.com/v6/latest/USD');
-            const fxData = await fxResponse.json();
+            // 1. Fetch Exchange Rate (USD to INR)
+            const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+            const fxData = await fxRes.json();
             const usdInr = fxData.rates.INR;
 
-            // 2. Fetch Gold Spot
-            const goldResponse = await fetch(GOLD_URL, {
-                headers: { 'x-api-key': MY_API_KEY }
+            // 2. Fetch Gold Spot (USD)
+            const goldRes = await fetch(GOLD_URL, {
+                headers: { 'x-api-key': API_KEY }
             });
-            const goldData = await goldResponse.json();
+            const goldData = await goldRes.json();
             const spotUSD = goldData.price;
 
-            // --- WHOLESALE FORMULA ---
-            const totalSpot = spotUSD + 3;
-            const usdPerKg = totalSpot * 32.1507;
-            const inrPerKgWithDuty = (usdPerKg * usdInr) * 1.06;
-            const finalWholesaleKg = inrPerKgWithDuty * 1.001;
+            // --- YOUR CUSTOM FORMULA ---
+            // Step 1 & 2: Spot + $3 and convert to Kg (32.1507)
+            const usdPerKg = (spotUSD + 3) * 32.1507;
             
-            // Base Rate (A) for 10g
-            previous24kt = last24kt;
-            last24kt = finalWholesaleKg / 100;
+            // Step 3 & 4: Convert to INR and add 6% Duty
+            const inrPerKgWithDuty = (usdPerKg * usdInr) * 1.06;
+            
+            // Step 5: Final Wholesale Price in Kg (Total * 1.001)
+            const finalWholesaleKg = inrPerKgWithDuty * 1.001;
+
+            // Derived 24kt Price (A) per 10g
+            baseRateA = finalWholesaleKg / 100;
 
             updateUI();
-            
-            const now = new Date();
-            document.getElementById('timestamp').innerText = now.toLocaleTimeString();
-
-        } catch (error) {
-            console.error("Sync Error:", error);
-            document.getElementById('timestamp').innerText = "Retry in 10m";
+            document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
+        } catch (e) {
+            console.error("Fetch Error:", e);
         }
     }
 
     function updateUI() {
-        if (!last24kt) return;
+        if (!baseRateA) return;
 
+        // Applying purity multipliers
         const rates = {
-            p24: Math.round(last24kt),
-            p22: Math.round(last24kt * 0.96),
-            p18: Math.round(last24kt * 0.825),
-            p14: Math.round(last24kt * 0.68),
-            p9:  Math.round(last24kt * 0.50)
+            p24: Math.round(baseRateA),
+            p22: Math.round(baseRateA * 0.96),  // 916 Rate
+            p18: Math.round(baseRateA * 0.825), // 750 Rate
+            p14: Math.round(baseRateA * 0.68),
+            p9:  Math.round(baseRateA * 0.50)
         };
 
         for (let key in rates) {
-            const el = document.getElementById(key);
-            el.innerText = `₹${rates[key].toLocaleString('en-IN')}`;
-            
-            // Trend Coloring
-            if (previous24kt > 0) {
-                if (last24kt > previous24kt) el.className = "price trend-up";
-                else if (last24kt < previous24kt) el.className = "price trend-down";
-            }
+            document.getElementById(key).innerText = `₹${rates[key].toLocaleString('en-IN')}`;
         }
     }
 
     function shareOnWhatsApp() {
-        if (!last24kt) return;
-        
-        const r24 = Math.round(last24kt);
-        const r22 = Math.round(last24kt * 0.96);
-        const r18 = Math.round(last24kt * 0.825);
-        const r14 = Math.round(last24kt * 0.68);
-        const r9  = Math.round(last24kt * 0.50);
+        if (!baseRateA) return;
+        const r24 = Math.round(baseRateA);
+        const r22 = Math.round(baseRateA * 0.96);
+        const r18 = Math.round(baseRateA * 0.825);
+        const r14 = Math.round(baseRateA * 0.68);
+        const r9  = Math.round(baseRateA * 0.50);
 
-        const message = `*MUMBullion LIVE RATES*%0A` +
-                        `💰 *24KT (999):* ₹${r24.toLocaleString('en-IN')}%0A` +
-                        `✨ *916 (22KT):* ₹${r22.toLocaleString('en-IN')}%0A` +
-                        `💎 *750 (18KT):* ₹${r18.toLocaleString('en-IN')}%0A` +
-                        `🔱 *585 (14KT):* ₹${r14.toLocaleString('en-IN')}%0A` +
-                        `🔸 *375 (9KT):* ₹${r9.toLocaleString('en-IN')}%0A` +
-                        `*Rates per 10g (Excl. GST)*%0A_Mumbai Wholesale Market_`;
-
-        window.open(`https://wa.me/?text=${message}`, '_blank');
+        const msg = `*MUMBullion LIVE RATES*%0A💰 *24KT:* ₹${r24.toLocaleString('en-IN')}%0A✨ *916 (22K):* ₹${r22.toLocaleString('en-IN')}%0A💎 *750 (18K):* ₹${r18.toLocaleString('en-IN')}%0A🔱 *14KT:* ₹${r14.toLocaleString('en-IN')}%0A🔸 *9KT:* ₹${r9.toLocaleString('en-IN')}%0A_Live Market Update_`;
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    // Interval set to 10 Minutes (600,000ms)
-    setInterval(fetchLiveRates, 600000);
-    window.onload = fetchLiveRates;
+    // 10 Minute Sync (600,000 ms)
+    setInterval(fetchRates, 600000);
+    window.onload = fetchRates;
 </script>
 
 </body>
