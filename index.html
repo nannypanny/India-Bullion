@@ -99,9 +99,38 @@
             color: #ffffff;
         }
 
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #1ebc5a;
+            transform: scale(1.05);
+        }
+
+        .whatsapp-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
         .updated-time {
             color: #555555;
-            margin-top: 40px;
+            margin-top: 20px;
             font-size: 0.9rem;
         }
 
@@ -161,6 +190,13 @@
         </div>
     </div>
 
+    <button class="whatsapp-btn" onclick="shareOnWhatsApp()">
+        <svg class="whatsapp-icon" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        Send Rates on WhatsApp
+    </button>
+
     <div class="updated-time" id="last-updated">Connecting to live feed...</div>
 
     <script>
@@ -171,30 +207,30 @@
             try {
                 const response = await fetch(sheetUrl + '&t=' + new Date().getTime());
                 const data = await response.text();
-                
                 const rows = data.split('\n');
                 
-                // Safety check to ensure rows exist before splitting
-                if(rows.length > 38) {
+                // Safety check to ensure the rows actually exist
+                if(rows.length > 22) {
                     
-                    // TARGETING SPECIFIC CELLS based on your layout
+                    // TARGETING THE NEW SPECIFIC CELLS 
+                    // Row 19 is index [18], Row 20 is [19], etc.
                     // Column C is index [2], Column E is index [4]
                     
-                    const row34 = rows[33].split(','); // 24KT Gold
-                    const row36 = rows[35].split(','); // 22KT Gold & Silver
-                    const row37 = rows[36].split(','); // 18KT Gold
-                    const row38 = rows[37].split(','); // 14KT Gold
-                    const row39 = rows[38].split(','); // 9KT Gold
+                    const row19 = rows[18].split(','); // 24KT Gold & Silver
+                    const row20 = rows[19].split(','); // 22KT Gold 
+                    const row21 = rows[20].split(','); // 18KT Gold
+                    const row22 = rows[21].split(','); // 14KT Gold
+                    const row23 = rows[22].split(','); // 9KT Gold
                     
                     // Parsing the exact numbers
-                    const val24k = parseFloat(row34[2]);
-                    const val22k = parseFloat(row36[2]);
-                    const val18k = parseFloat(row37[2]);
-                    const val14k = parseFloat(row38[2]);
-                    const val9k  = parseFloat(row39[2]);
-                    const valSilver = parseFloat(row36[4]);
+                    const val24k = parseFloat(row19[2]);
+                    const valSilver = parseFloat(row19[4]);
+                    const val22k = parseFloat(row20[2]);
+                    const val18k = parseFloat(row21[2]);
+                    const val14k = parseFloat(row22[2]);
+                    const val9k  = parseFloat(row23[2]);
                     
-                    // Indian Currency Formatter (Removes decimal places for a cleaner look)
+                    // Indian Currency Formatter
                     const formatter = new Intl.NumberFormat('en-IN', { 
                         style: 'currency', 
                         currency: 'INR',
@@ -212,10 +248,33 @@
                     const now = new Date();
                     document.getElementById('last-updated').innerText = 'Last synced: ' + now.toLocaleTimeString();
                 }
-
             } catch (error) {
                 console.error("Data sync failed: ", error);
             }
+        }
+
+        // WhatsApp Share Function
+        function shareOnWhatsApp() {
+            // Grab the current prices visible on the screen
+            const val24 = document.getElementById('gold-24k').innerText;
+            const val22 = document.getElementById('gold-22k').innerText;
+            const val18 = document.getElementById('gold-18k').innerText;
+            const val14 = document.getElementById('gold-14k').innerText;
+            const val9 = document.getElementById('gold-9k').innerText;
+            const valSil = document.getElementById('silver-ornaments').innerText;
+
+            // Check if the data has loaded before allowing sharing
+            if (val24 === "Loading..." || val24 === "₹NaN") {
+                alert("Please wait for the live rates to load before sharing.");
+                return;
+            }
+
+            // Build the exact text message
+            const message = `*MUMBAI GOLD PRICES*\n(Live Market Rates)\n\n*GOLD (per 10g)*\n24KT (999): ${val24}\n22KT (916): ${val22}\n18KT (750): ${val18}\n14KT (580): ${val14}\n9KT (375):  ${val9}\n\n*SILVER (per 1KG)*\nOrnaments:  ${valSil}`;
+
+            // Create the WhatsApp API link and open it in a new tab
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
         // Run immediately, then check for new data every 10 seconds
