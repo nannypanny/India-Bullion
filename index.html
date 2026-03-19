@@ -3,172 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUMBullion Live</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Mumbai Live Bullion Rates</title>
     <style>
-        :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #1A1A1A; --text: #E0E0E0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; justify-content: center; overflow-x: hidden; }
-        .app-container { width: 100%; max-width: 380px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 20px; }
-        .brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); font-weight: 700; letter-spacing: 1px; }
-        
-        .tax-control { display: flex; align-items: center; justify-content: space-between; background: #222; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .switch { position: relative; display: inline-block; width: 42px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #4CAF50; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .tax-label { font-size: 0.8rem; font-weight: 600; color: #888; }
-        .tax-label.active { color: #FFF; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 12px; border: 1px solid #2A2A2A; position: relative; }
-        .card::before { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--gold); }
-        .label { font-size: 0.65rem; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
+        /* Header Styling */
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            position: relative;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
         
-        .price-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #FFF; margin: 2px 0; transition: color 0.2s ease; }
-        .price-up { color: #4CAF50 !important; }
-        .price-down { color: #FF5252 !important; }
+        .main-title {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #ffd700;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .live-status {
+            position: absolute;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            color: #00e676;
+            font-size: 1.1rem;
+        }
+
+        .blinking-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #00e676;
+            border-radius: 50%;
+            animation: blink 1.5s infinite ease-in-out;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px #00e676; }
+            50% { opacity: 0.3; box-shadow: none; }
+        }
+
+        /* Grid Layout for Cards */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* Card Styling */
+        .price-card {
+            background-color: #1e1e1e;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s;
+        }
         
-        .unit { font-size: 0.7rem; color: #666; font-weight: 500; }
+        .price-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .gold-card { border-top: 4px solid #ffd700; }
+        .silver-card { border-top: 4px solid #e3e4e5; }
         
-        .share-btn { width: 55%; margin: 15px auto 0 auto; background: transparent; color: #25D366; border: 1px solid #25D366; padding: 8px; border-radius: 25px; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
-        .share-btn:active { transform: scale(0.95); background: rgba(37, 211, 102, 0.1); }
+        h2 { margin: 0 0 5px 0; font-size: 1.8rem; }
+        .gold-title { color: #ffd700; }
+        .silver-title { color: #e3e4e5; }
         
-        .footer { text-align: center; font-size: 0.65rem; color: #444; margin-top: 20px; line-height: 1.6; }
-        #timestamp { color: var(--gold); font-weight: 600; }
-        .live-tag { color: #4CAF50; font-weight: 700; font-size: 0.55rem; border: 1px solid #4CAF50; padding: 2px 6px; border-radius: 4px; animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        .purity { color: #aaaaaa; font-size: 0.9rem; letter-spacing: 1px; }
+        
+        .price {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 15px 0 0 0;
+            color: #ffffff;
+        }
+
+        .updated-time {
+            color: #555555;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 15px; }
+            .live-status { position: static; }
+            .main-title { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header>
-        <div class="brand">MUMBullion Live</div>
-        <div class="live-tag">LIVE TICK</div>
-    </header>
-
-    <div class="tax-control">
-        <span id="taxStatusLabel" class="tax-label">Include 3% GST</span>
-        <label class="switch">
-            <input type="checkbox" id="taxToggle" onchange="updateUI()">
-            <span class="slider"></span>
-        </label>
+    <div class="header-container">
+        <h1 class="main-title">MUMBAI GOLD PRICES</h1>
+        <div class="live-status">
+            <div class="blinking-dot"></div>
+            Live Rates
+        </div>
     </div>
 
-    <div class="card">
-        <div class="label">24KT GOLD (99.9)</div>
-        <div id="p24" class="price-display">₹ --,---</div>
-        <div class="unit">Rate per 10 Grams</div>
+    <div class="grid-container">
+        <div class="price-card gold-card">
+            <h2 class="gold-title">24KT GOLD</h2>
+            <div class="purity">999 PURITY (per 10g)</div>
+            <div class="price" id="gold-24k">Loading...</div>
+        </div>
+
+        <div class="price-card gold-card">
+            <h2 class="gold-title">22KT GOLD</h2>
+            <div class="purity">916 PURITY (per 10g)</div>
+            <div class="price" id="gold-22k">Loading...</div>
+        </div>
+
+        <div class="price-card gold-card">
+            <h2 class="gold-title">18KT GOLD</h2>
+            <div class="purity">750 PURITY (per 10g)</div>
+            <div class="price" id="gold-18k">Loading...</div>
+        </div>
+
+        <div class="price-card gold-card">
+            <h2 class="gold-title">14KT GOLD</h2>
+            <div class="purity">580 PURITY (per 10g)</div>
+            <div class="price" id="gold-14k">Loading...</div>
+        </div>
+
+        <div class="price-card gold-card">
+            <h2 class="gold-title">9KT GOLD</h2>
+            <div class="purity">375 PURITY (per 10g)</div>
+            <div class="price" id="gold-9k">Loading...</div>
+        </div>
+
+        <div class="price-card silver-card">
+            <h2 class="silver-title">SILVER</h2>
+            <div class="purity">ORNAMENTS (per 1KG)</div>
+            <div class="price" id="silver-ornaments">Loading...</div>
+        </div>
     </div>
 
-    <div class="card">
-        <div class="label">22KT GOLD (91.6)</div>
-        <div id="p22" class="price-display">₹ --,---</div>
-        <div class="unit">Rate per 10 Grams</div>
-    </div>
+    <div class="updated-time" id="last-updated">Connecting to live feed...</div>
 
-    <div class="card">
-        <div class="label">18KT GOLD (75.0)</div>
-        <div id="p18" class="price-display">₹ --,---</div>
-        <div class="unit">Rate per 10 Grams</div>
-    </div>
+    <script>
+        // 1. PASTE YOUR PUBLISHED CSV LINK HERE
+        const sheetUrl = 'YOUR_PUBLISHED_CSV_LINK_HERE';
 
-    <button class="share-btn" onclick="shareToWhatsApp()">
-        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
-        WhatsApp Rates
-    </button>
+        async function fetchPrices() {
+            try {
+                const response = await fetch(sheetUrl + '&t=' + new Date().getTime());
+                const data = await response.text();
+                
+                const rows = data.split('\n');
+                
+                // Safety check to ensure rows exist before splitting
+                if(rows.length > 38) {
+                    
+                    // TARGETING SPECIFIC CELLS based on your layout
+                    // Column C is index [2], Column E is index [4]
+                    
+                    const row34 = rows[33].split(','); // 24KT Gold
+                    const row36 = rows[35].split(','); // 22KT Gold & Silver
+                    const row37 = rows[36].split(','); // 18KT Gold
+                    const row38 = rows[37].split(','); // 14KT Gold
+                    const row39 = rows[38].split(','); // 9KT Gold
+                    
+                    // Parsing the exact numbers
+                    const val24k = parseFloat(row34[2]);
+                    const val22k = parseFloat(row36[2]);
+                    const val18k = parseFloat(row37[2]);
+                    const val14k = parseFloat(row38[2]);
+                    const val9k  = parseFloat(row39[2]);
+                    const valSilver = parseFloat(row36[4]);
+                    
+                    // Indian Currency Formatter (Removes decimal places for a cleaner look)
+                    const formatter = new Intl.NumberFormat('en-IN', { 
+                        style: 'currency', 
+                        currency: 'INR',
+                        maximumFractionDigits: 0 
+                    });
 
-    <div class="footer">
-        MUMBullion • Reference GoldAPI.io<br>
-        Next API Sync: <span id="timestamp">--:--:--</span>
-    </div>
-</div>
+                    // Pushing data to the screen
+                    document.getElementById('gold-24k').innerText = formatter.format(val24k);
+                    document.getElementById('gold-22k').innerText = formatter.format(val22k);
+                    document.getElementById('gold-18k').innerText = formatter.format(val18k);
+                    document.getElementById('gold-14k').innerText = formatter.format(val14k);
+                    document.getElementById('gold-9k').innerText = formatter.format(val9k);
+                    document.getElementById('silver-ornaments').innerText = formatter.format(valSilver);
+                    
+                    const now = new Date();
+                    document.getElementById('last-updated').innerText = 'Last synced: ' + now.toLocaleTimeString();
+                }
 
-<script>
-    // UPDATED API KEY
-    const MY_API_KEY = 'Goldapi-3j1fsmmvn1osn-io';
-    let baseRate = 0; 
-    let displayPrice = 0; 
-    let lastP24 = 0;
-
-    async function fetchLiveRates() {
-        try {
-            const response = await fetch("https://www.goldapi.io/api/XAU/INR", {
-                method: 'GET',
-                headers: { "x-access-token": MY_API_KEY, "Content-Type": "application/json" }
-            });
-            const data = await response.json();
-            
-            // Formula: Spot + 4.70% premium
-            baseRate = (data.price / 31.1035) * 1.0470;
-            displayPrice = baseRate;
-            
-            updateUI();
-            
-            let nextUpdate = new Date();
-            nextUpdate.setMinutes(nextUpdate.getMinutes() + 2);
-            document.getElementById('timestamp').innerText = nextUpdate.toLocaleTimeString();
-        } catch (e) { console.error("Sync error", e); }
-    }
-
-    function tickSimulation() {
-        if (!baseRate) return;
-        const fluctuation = (Math.random() - 0.5) * 0.10;
-        displayPrice += fluctuation;
-        if (displayPrice > baseRate * 1.001) displayPrice -= 0.05;
-        if (displayPrice < baseRate * 0.999) displayPrice += 0.05;
-        updateUI();
-    }
-
-    function updateUI() {
-        if (!displayPrice) return;
-        const isGstOn = document.getElementById('taxToggle').checked;
-        const finalPricePerGram = isGstOn ? (displayPrice * 1.03) : displayPrice;
-        
-        const p24 = Math.round(finalPricePerGram * 10);
-        const p22 = Math.round(p24 * 0.95); // 95% Calculation confirmed
-        const p18 = Math.round(p24 * 0.82); 
-
-        const el24 = document.getElementById('p24');
-        const el22 = document.getElementById('p22');
-        const el18 = document.getElementById('p18');
-        
-        if (p24 > lastP24) {
-            [el24, el22, el18].forEach(el => el.className = "price-display price-up");
-        } else if (p24 < lastP24) {
-            [el24, el22, el18].forEach(el => el.className = "price-display price-down");
+            } catch (error) {
+                console.error("Data sync failed: ", error);
+            }
         }
-        
-        el24.innerText = "₹" + p24.toLocaleString('en-IN');
-        el22.innerText = "₹" + p22.toLocaleString('en-IN');
-        el18.innerText = "₹" + p18.toLocaleString('en-IN');
-        
-        lastP24 = p24;
-        setTimeout(() => { 
-            [el24, el22, el18].forEach(el => el.className = "price-display");
-        }, 300);
-        
-        document.getElementById('taxStatusLabel').className = isGstOn ? "tax-label active" : "tax-label";
-    }
 
-    function shareToWhatsApp() {
-        if (!lastP24) return;
-        const isGstOn = document.getElementById('taxToggle').checked;
-        const gst = isGstOn ? "(Incl. 3% GST)" : "(Excl. GST)";
-        const p22 = Math.round(lastP24 * 0.95);
-        const p18 = Math.round(lastP24 * 0.82);
-        
-        const message = `*MUMBullion LIVE RATES*%0A💰 *24KT:* ₹${lastP24.toLocaleString('en-IN')}%0A✨ *22KT:* ₹${p22.toLocaleString('en-IN')}%0A💎 *18KT:* ₹${p18.toLocaleString('en-IN')}%0A*10g Rates ${gst}*%0A_Live Market Update_`;
-        window.open(`https://wa.me/?text=${message}`, '_blank');
-    }
-
-    setInterval(fetchLiveRates, 120000); // 2 min sync
-    setInterval(tickSimulation, 600);    // 0.6 sec tick
-
-    window.onload = fetchLiveRates;
-</script>
+        // Run immediately, then check for new data every 10 seconds
+        fetchPrices();
+        setInterval(fetchPrices, 10000); 
+    </script>
 
 </body>
 </html>
