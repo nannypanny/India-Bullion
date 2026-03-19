@@ -42,7 +42,7 @@
 
     <div class="footer">
         Formula: ((Spot+3)*32.1507)*FX*1.06*1.001 / 100<br>
-        Purity: 22K=960/100, 18K=825/100, 14K=680/100, 9K=500/100<br>
+        Purity: 22K=96.0/100, 18K=82.5/100, 14K=68.0/100, 9K=50.0/100<br>
         Next Sync (10m): <span id="timestamp">--:--:--</span>
     </div>
 </div>
@@ -130,7 +130,7 @@
     function shareOnWhatsApp() {
         if (!currentE) return;
         const r = (val) => Math.round(val).toLocaleString('en-IN');
-        const msg = `*MUMBullion LIVE RATES*%0A💰 *24KT:* ₹${r(currentE)}%0A✨ *916 (22K):* ₹${r(currentE * 960 / 100)}%0A💎 *750 (18K):* ₹${r(currentE * 825 / 100)}%0A🔱 *14KT:* ₹${r(currentE * 680 / 100)}%0A🔸 *9KT:* ₹${r(currentE * 500 / 100)}%0A_Mumbai Wholesale Market_`;
+        const msg = `*MUMBullion LIVE RATES*%0A💰 *24KT:* ₹${r(currentE)}%0A✨ *916 (22K):* ₹${r(currentE * 96.0 / 100)}%0A💎 *750 (18K):* ₹${r(currentE * 82.5 / 100)}%0A🔱 *14KT:* ₹${r(currentE * 68.0 / 100)}%0A🔸 *9KT:* ₹${r(currentE * 50.0 / 100)}%0A_Mumbai Wholesale Market_`;
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
