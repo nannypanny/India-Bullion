@@ -113,9 +113,9 @@
         document.getElementById('gstNote').innerText = isGst ? "All Rates include 3% GST" : "All Rates are Exc. 3% GST";
 
         const rates = {
-            p24: Math.round(goldBase * multiplier),
-            p22: Math.round((goldBase * 0.92) * multiplier), // Standard 91.6% purity
-            p18: Math.round((goldBase * 0.75) * multiplier),
+            p24: Math.round((goldBase * multiplier) + 500),
+            p22: Math.round((goldBase * 0.96) * multiplier), // Standard 91.6% purity
+            p18: Math.round((goldBase * 0.83) * multiplier),
             pSilver: Math.round(silverBase * multiplier)
         };
 
