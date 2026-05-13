@@ -90,12 +90,12 @@
             // Gold Logic (Per 10g)
             // ((Spot+3)*32.1507)*FX*1.06*1.001 / 100
             const goldKgUsd = (gData.price + 3) * 32.1507;
-            goldBase = (goldKgUsd * usdInr * 1.06 * 1.001) / 100;
+            goldBase = (goldKgUsd * usdInr * 1.15 * 1.001) / 100;
 
             // Silver Logic (Per 1kg)
             // Formula: (Spot + 0.50 premium) * 32.1507 * FX * 1.06 (Duty) * 1.001 (Markup)
             const silverKgUsd = (sData.price + 0.50) * 32.1507;
-            silverBase = (silverKgUsd * usdInr * 1.06 * 1.001);
+            silverBase = (silverKgUsd * usdInr * 1.15 * 1.001);
 
             updateUI();
             document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
